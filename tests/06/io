@@ -1,0 +1,335 @@
+> ____________________
+>  ____   ____   ____ 
+> |____  |____  |____|
+> |____   ____| |     
+> ____________________
+> 
+> Welcome to the
+> Elevator Simulation Program!
+> 
+> Enter the name of the hotel:
+?  > 
+< HILTON
+> Enter the number of floors in hotel HILTON:
+?  > 
+< 5
+> Enter the number of elevators in hotel HILTON:
+?  > 
+< 2
+> Enter the capacity of elevators in hotel HILTON:
+?  > 
+< 2
+> Enter the number of people waiting on each floor:
+?  > 
+< 4
+> Enter the destination floors of the people [floor: 0]:
+?  > 
+< 1,2,3,4 
+> Enter the destination floors of the people [floor: 1]:
+?  > 
+< 0,2,3,4
+> Enter the destination floors of the people [floor: 2]:
+?  > 
+< 0,1,3,4
+> Enter the destination floors of the people [floor: 3]:
+?  > 
+< 0,1,2,4
+> Enter the destination floors of the people [floor: 4]:
+?  > 
+< 0,1,2,3
+> Show the initial state? ("yes"/"no"):
+?  > 
+< yes
+> 
+> =================
+>   INITIAL STATE
+> =================
+> 
+> ++-----------++
+> ++  HILTON   ++
+> ++-----+-----++
+> ||     | [0] ||  (0,1,2,3)
+> ||-   -+-   -||
+> ||     |     ||  (0,1,2,4)
+> ||-   -+-   -||
+> ||     |     ||  (0,1,3,4)
+> ||-   -+-   -||
+> ||     |     ||  (0,2,3,4)
+> ||-   -+-   -||
+> || [0] |     ||  (1,2,3,4)
+> ++-----+-----++
+> 
+> Start the simulation? ("start"/"skip"):
+?  > 
+< start
+> Show all steps of the simulation? ("all steps"/"end result"):
+?  > 
+< all steps
+> === Simulation Step 1 ===
+> ++-----------++
+> ++  HILTON   ++
+> ++-----+-----++
+> ||     | [2] ||  (-,-,0,1)
+> ||-   -+-   -||
+> ||     |     ||  (0,1,2,4)
+> ||-   -+-   -||
+> ||     |     ||  (0,1,3,4)
+> ||-   -+-   -||
+> ||     |     ||  (0,2,3,4)
+> ||-   -+-   -||
+> || [2] |     ||  (-,-,3,4)
+> ++-----+-----++
+> Elevators:
+> 0: (1,2)
+> 1: (2,3)
+> 
+> === Simulation Step 2 ===
+> A person reached their destination floor 1 with elevator 0.
+> A person reached their destination floor 3 with elevator 1.
+> ++-----------++
+> ++  HILTON   ++
+> ++-----+-----++
+> ||     |     ||  (-,-,0,1)
+> ||-   -+-   -||
+> ||     | [2] ||  (-,0,1,4)
+> ||-   -+-   -||
+> ||     |     ||  (0,1,3,4)
+> ||-   -+-   -||
+> || [2] |     ||  (-,0,3,4)
+> ||-   -+-   -||
+> ||     |     ||  (-,-,3,4)
+> ++-----+-----++
+> Elevators:
+> 0: (2,2)
+> 1: (2,2)
+> 
+> === Simulation Step 3 ===
+> A person reached their destination floor 2 with elevator 0.
+> A person reached their destination floor 2 with elevator 0.
+> A person reached their destination floor 2 with elevator 1.
+> A person reached their destination floor 2 with elevator 1.
+> ++-----------++
+> ++  HILTON   ++
+> ++-----+-----++
+> ||     |     ||  (-,-,0,1)
+> ||-   -+-   -||
+> ||     |     ||  (-,0,1,4)
+> ||-   -+-   -||
+> || [2] | [2] ||  (-,-,-,-)
+> ||-   -+-   -||
+> ||     |     ||  (-,0,3,4)
+> ||-   -+-   -||
+> ||     |     ||  (-,-,3,4)
+> ++-----+-----++
+> Elevators:
+> 0: (3,4)
+> 1: (0,1)
+> 
+> === Simulation Step 4 ===
+> A person reached their destination floor 3 with elevator 0.
+> A person reached their destination floor 1 with elevator 1.
+> ++-----------++
+> ++  HILTON   ++
+> ++-----+-----++
+> ||     |     ||  (-,-,0,1)
+> ||-   -+-   -||
+> || [2] |     ||  (-,-,0,1)
+> ||-   -+-   -||
+> ||     |     ||  (-,-,-,-)
+> ||-   -+-   -||
+> ||     | [2] ||  (-,-,3,4)
+> ||-   -+-   -||
+> ||     |     ||  (-,-,3,4)
+> ++-----+-----++
+> Elevators:
+> 0: (4,4)
+> 1: (0,0)
+> 
+> === Simulation Step 5 ===
+> A person reached their destination floor 4 with elevator 0.
+> A person reached their destination floor 4 with elevator 0.
+> A person reached their destination floor 0 with elevator 1.
+> A person reached their destination floor 0 with elevator 1.
+> ++-----------++
+> ++  HILTON   ++
+> ++-----+-----++
+> || [2] |     ||  (-,-,-,-)
+> ||-   -+-   -||
+> ||     |     ||  (-,-,0,1)
+> ||-   -+-   -||
+> ||     |     ||  (-,-,-,-)
+> ||-   -+-   -||
+> ||     |     ||  (-,-,3,4)
+> ||-   -+-   -||
+> ||     | [2] ||  (-,-,-,-)
+> ++-----+-----++
+> Elevators:
+> 0: (0,1)
+> 1: (3,4)
+> 
+> === Simulation Step 6 ===
+> ++-----------++
+> ++  HILTON   ++
+> ++-----+-----++
+> ||     |     ||  (-,-,-,-)
+> ||-   -+-   -||
+> || [2] |     ||  (-,-,0,1)
+> ||-   -+-   -||
+> ||     |     ||  (-,-,-,-)
+> ||-   -+-   -||
+> ||     | [2] ||  (-,-,3,4)
+> ||-   -+-   -||
+> ||     |     ||  (-,-,-,-)
+> ++-----+-----++
+> Elevators:
+> 0: (0,1)
+> 1: (3,4)
+> 
+> === Simulation Step 7 ===
+> ++-----------++
+> ++  HILTON   ++
+> ++-----+-----++
+> ||     |     ||  (-,-,-,-)
+> ||-   -+-   -||
+> ||     |     ||  (-,-,0,1)
+> ||-   -+-   -||
+> || [2] | [2] ||  (-,-,-,-)
+> ||-   -+-   -||
+> ||     |     ||  (-,-,3,4)
+> ||-   -+-   -||
+> ||     |     ||  (-,-,-,-)
+> ++-----+-----++
+> Elevators:
+> 0: (0,1)
+> 1: (3,4)
+> 
+> === Simulation Step 8 ===
+> A person reached their destination floor 1 with elevator 0.
+> A person reached their destination floor 3 with elevator 1.
+> ++-----------++
+> ++  HILTON   ++
+> ++-----+-----++
+> ||     |     ||  (-,-,-,-)
+> ||-   -+-   -||
+> ||     | [1] ||  (-,-,0,1)
+> ||-   -+-   -||
+> ||     |     ||  (-,-,-,-)
+> ||-   -+-   -||
+> || [1] |     ||  (-,-,3,4)
+> ||-   -+-   -||
+> ||     |     ||  (-,-,-,-)
+> ++-----+-----++
+> Elevators:
+> 0: (-,0)
+> 1: (-,4)
+> 
+> === Simulation Step 9 ===
+> A person reached their destination floor 0 with elevator 0.
+> A person reached their destination floor 4 with elevator 1.
+> ++-----------++
+> ++  HILTON   ++
+> ++-----+-----++
+> ||     | [0] ||  (-,-,-,-)
+> ||-   -+-   -||
+> ||     |     ||  (-,-,0,1)
+> ||-   -+-   -||
+> ||     |     ||  (-,-,-,-)
+> ||-   -+-   -||
+> ||     |     ||  (-,-,3,4)
+> ||-   -+-   -||
+> || [0] |     ||  (-,-,-,-)
+> ++-----+-----++
+> 
+> === Simulation Step 10 ===
+> ++-----------++
+> ++  HILTON   ++
+> ++-----+-----++
+> ||     |     ||  (-,-,-,-)
+> ||-   -+-   -||
+> ||     | [2] ||  (-,-,-,-)
+> ||-   -+-   -||
+> ||     |     ||  (-,-,-,-)
+> ||-   -+-   -||
+> || [2] |     ||  (-,-,-,-)
+> ||-   -+-   -||
+> ||     |     ||  (-,-,-,-)
+> ++-----+-----++
+> Elevators:
+> 0: (3,4)
+> 1: (0,1)
+> 
+> === Simulation Step 11 ===
+> ++-----------++
+> ++  HILTON   ++
+> ++-----+-----++
+> ||     |     ||  (-,-,-,-)
+> ||-   -+-   -||
+> ||     |     ||  (-,-,-,-)
+> ||-   -+-   -||
+> || [2] | [2] ||  (-,-,-,-)
+> ||-   -+-   -||
+> ||     |     ||  (-,-,-,-)
+> ||-   -+-   -||
+> ||     |     ||  (-,-,-,-)
+> ++-----+-----++
+> Elevators:
+> 0: (3,4)
+> 1: (0,1)
+> 
+> === Simulation Step 12 ===
+> A person reached their destination floor 3 with elevator 0.
+> A person reached their destination floor 1 with elevator 1.
+> ++-----------++
+> ++  HILTON   ++
+> ++-----+-----++
+> ||     |     ||  (-,-,-,-)
+> ||-   -+-   -||
+> || [1] |     ||  (-,-,-,-)
+> ||-   -+-   -||
+> ||     |     ||  (-,-,-,-)
+> ||-   -+-   -||
+> ||     | [1] ||  (-,-,-,-)
+> ||-   -+-   -||
+> ||     |     ||  (-,-,-,-)
+> ++-----+-----++
+> Elevators:
+> 0: (-,4)
+> 1: (-,0)
+> 
+> === Simulation Step 13 ===
+> A person reached their destination floor 4 with elevator 0.
+> A person reached their destination floor 0 with elevator 1.
+> ++-----------++
+> ++  HILTON   ++
+> ++-----+-----++
+> || [0] |     ||  (-,-,-,-)
+> ||-   -+-   -||
+> ||     |     ||  (-,-,-,-)
+> ||-   -+-   -||
+> ||     |     ||  (-,-,-,-)
+> ||-   -+-   -||
+> ||     |     ||  (-,-,-,-)
+> ||-   -+-   -||
+> ||     | [0] ||  (-,-,-,-)
+> ++-----+-----++
+> 
+> 
+> =================
+>    FINAL STATE
+> =================
+> 
+> ++-----------++
+> ++  HILTON   ++
+> ++-----+-----++
+> || [0] |     ||  (-,-,-,-)
+> ||-   -+-   -||
+> ||     |     ||  (-,-,-,-)
+> ||-   -+-   -||
+> ||     |     ||  (-,-,-,-)
+> ||-   -+-   -||
+> ||     |     ||  (-,-,-,-)
+> ||-   -+-   -||
+> ||     | [0] ||  (-,-,-,-)
+> ++-----+-----++
+> 
+> Simulation done in 13 steps!

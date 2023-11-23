@@ -1,0 +1,55 @@
+[project_definition]
+binary_path = "./a2"
+makefile_path = "."
+make_targets = ["all"]
+project_name = "a2"
+global_timeout = 10
+
+[[testcases]]
+name = "Getting Input"
+description = "Getting correct input from user."
+type = "OrdIO"
+io_file = "tests/01/io"
+io_prompt = "^\\s*>\\s*$"
+exp_exit_code = 0
+
+[[testcases]]
+name = "Out of range"
+description = "Sorry that is out of range."
+type = "OrdIO"
+io_file = "tests/02/io"
+io_prompt = "^\\s*>\\s*$"
+exp_exit_code = 0
+
+[[testcases]]
+name = "Mini hotel"
+description = "Just initalizing a mini hotel."
+type = "OrdIO"
+io_file = "tests/03/io"
+io_prompt = "^\\s*>\\s*$"
+exp_exit_code = 0
+
+[[testcases]]
+name = "Big hotel"
+description = "Showing how big this hotel is."
+type = "OrdIO"
+io_file = "tests/04/io"
+io_prompt = "^\\s*>\\s*$"
+exp_exit_code = 0
+
+[[testcases]]
+name = "Small Simulation"
+description = "Simulate an elevator in a small hotel."
+type = "OrdIO"
+io_file = "tests/05/io"
+io_prompt = "^\\s*>\\s*$"
+exp_exit_code = 5
+
+[[testcases]]
+name = "Normal Siumlation"
+description = "Simulating some normal-sized hotel."
+type = "OrdIO"
+io_file = "tests/06/io"
+io_prompt = "^\\s*>\\s*$"
+exp_exit_code = 13
+

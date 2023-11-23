@@ -1,0 +1,8 @@
+test:
+  stage: test
+  script: 'sh "$(find "$CI_PROJECT_DIR" -name "subm_status.sh" 2>/dev/null)"'
+  artifacts:
+    when: always
+    paths:
+      - testreport.html
+      - valgrind_logs/

@@ -1,0 +1,45 @@
+> ____________________
+>  ____   ____   ____ 
+> |____  |____  |____|
+> |____   ____| |     
+> ____________________
+> 
+> Welcome to the
+> Elevator Simulation Program!
+> 
+> Enter the name of the hotel:
+?  > 
+< HILTON
+> Enter the number of floors in hotel HILTON:
+?  > 
+< 5
+> Enter the number of elevators in hotel HILTON:
+?  > 
+< 3
+> Enter the capacity of elevators in hotel HILTON:
+?  > 
+< 2
+> Enter the number of people waiting on each floor:
+?  > 
+< 4
+> Enter the destination floors of the people [floor: 0]:
+?  > 
+< 1,2,3,4
+> Enter the destination floors of the people [floor: 1]:
+?  > 
+< 0,2,3,4
+> Enter the destination floors of the people [floor: 2]:
+?  > 
+< 0,1,3,4
+> Enter the destination floors of the people [floor: 3]:
+?  > 
+< 0,1,2,4
+> Enter the destination floors of the people [floor: 4]:
+?  > 
+< 0,1,2,3
+> Show the initial state? ("yes"/"no"):
+?  > 
+< no
+> Start the simulation? ("start"/"skip"):
+?  > 
+< skip
