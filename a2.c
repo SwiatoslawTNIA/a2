@@ -20,7 +20,7 @@ void greeting(void);
 
 
 
-void header(void);
+int header(void);
 char *hotel_name(void);
 int *floors(char *hotel_name);
 int *elev_count(char *totel_name);
@@ -31,10 +31,14 @@ int *destination_f(int *floors, int *people_w);
 
 int main(void)
 {
-  header();
+  int rsp = header();
+  if(rsp == -1)
+    return -1;
+  
 }
-void header(void)
+int header(void)
 {
+  
    greeting();
   char *hotel = hotel_name();//return a pointer to the string hotelName;
   int *floors_num = floors(hotel);//collect the number of floors;
@@ -43,9 +47,16 @@ void header(void)
   int *people_waiting = people_w();//collect the amount of waiting people;
   int *dest_arr = destination_f(floors_num, people_waiting);
   printf("%s, %d, %d, %d, %d\n", hotel, *floors_num, *elevators, *elev_cap, *people_waiting);
-  // for(; *dest_arr != -1; dest_arr++){
-  //   printf("<%d>", *dest_arr);
-  // }
+  //check for available memory
+  
+  if(hotel == NULL || elevators == NULL || people_waiting == NULL || dest_arr == NULL || floors_num == NULL){
+    return -1;
+  }
+  //simulation:
+  
+
+
+
   //freeing the memory
   free(hotel);
   free(floors_num);
@@ -53,7 +64,7 @@ void header(void)
   free(elev_cap);
   free(people_waiting);
   free(dest_arr);
-  
+  return 0;
 }
 //---------------------------------------------------------------------------------------------------------------------
 ///function greets the user;no params;
@@ -96,6 +107,10 @@ int *floors(char *hotel_name)
 {
   //dynamic memory allocation:
   int *p = (int *)malloc(sizeof(int));
+  if(p == NULL){
+    printf("Out of memory! Program terminated!\n");
+    return p;
+  }
   printf("Enter the number of floors in hotel %s:\n > ", hotel_name);    int digit  = 0;
   scanf("%d", &digit);
   while( (digit > 10 || digit < 3)){      
@@ -113,6 +128,10 @@ int *floors(char *hotel_name)
 int *elev_count(char *hotel_name)
 {
   int *p = malloc(sizeof(int));
+  if(p == NULL){
+    printf("Out of memory! Program terminated!\n");
+    return p;
+  }
   printf("Enter the number of elevators in hotel %s:\n > ", hotel_name);
   int elv_num  = 0;
   scanf("%d", &elv_num);
@@ -132,6 +151,10 @@ int *elev_count(char *hotel_name)
 int *elevCapacity(char *hotel_name)
 {
   int *elv_c_p = malloc(sizeof(int));
+  if(elv_c_p == NULL){
+    printf("Out of memory! Program terminated!\n");
+    return elv_c_p;
+  }
   printf("Enter the capacity of elevators in hotel %s:\n > ", hotel_name);
   int elv_cap  = 0;
   scanf("%d", &elv_cap);
@@ -150,6 +173,10 @@ int *elevCapacity(char *hotel_name)
 int *people_w(void)
 {
   int *p = malloc(sizeof(int));
+  if(p == NULL){
+    printf("Out of memory! Program terminated!\n");
+    return p;
+  }
   printf("Enter the number of people waiting on each floor:\n > ");
   int p_w  = 0;
   scanf("%d", &p_w);
@@ -164,8 +191,9 @@ int *people_w(void)
 //---------------------------------------------------------------------------------------------------------------------
 ///
 /// This function collects the amount of waiting people and returns the result in type int;
-/// @param void (no parameters)
-/// @return the number of waiting people
+/// @param int *floors takes the int pointer of the int people_w
+/// @param int *people_w takes the int pointer of the int people_w
+/// @return the integer pointer to the array of destinations of each person
 int *destination_f(int *floors, int *people_w){
   //plan
   /*
@@ -178,6 +206,10 @@ int *destination_f(int *floors, int *people_w){
   */
   int *arr = malloc((sizeof(int)* (*people_w) * (*floors)));//the size of our array; + our num;
   //create a pointer copy:
+  if(arr == NULL){
+    printf("Out of memory! Program terminated!\n");
+    return arr;
+  }
   int *arr_c = arr;
   int current_floor = 0, can_proceed = FALSE;
   while(current_floor < *floors){
@@ -220,6 +252,7 @@ int *destination_f(int *floors, int *people_w){
     }
   }
   *arr_c = -1;
+  // ++arr_c;
   // arr_c = NULL;//nullify our pointer
   return arr;
 }
