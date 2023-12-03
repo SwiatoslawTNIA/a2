@@ -14,14 +14,12 @@
 enum {FALSE = 0, TRUE = 1, ST_SIZE = 100};
 //function prototyping
 int strl(char arr[]);//string length
-void greeting(void);
+
 char *low(char *p);//string to lowercase
 int str_com(char str1[], char str2[]);//compares two strings
 char *up(char *b);//string to uppercase
-
-
-
 int header(void);
+void greeting(void);
 char *hotel_name(void);
 int *floors(char *hotel_name);
 int *elev_count(char *totel_name);
@@ -29,7 +27,7 @@ int *elevCapacity(char *hotel_name);
 int *people_w(void);
 int *destination_f(int *floors, int *people_w);
 int show_sim(void);
-void initial_state(char *hotel);
+void initial_state(char * hotel, int *floors_number, int *elev, int *elev_cap,int *people_waiting,int *dest_arr);
 void print_hotel_name(char *hotel_n);
 
 
@@ -64,7 +62,7 @@ int header(void)
   //simulation:
   int show_simulation = show_sim();
   if(show_simulation == 2){
-    initial_state(hotel);
+    initial_state(hotel, floors_num, elevators, elev_cap, people_waiting, dest_arr);
   }else if(show_simulation == 1){
     
   }
@@ -162,6 +160,7 @@ int *elev_count(char *hotel_name)
   scanf("%d", &elv_num);
   while( (elv_num < 1 || elv_num > 5)){
     printf("Wrong input, the number of elevators must be between 1 and 5!\n");
+    printf("Enter the number of elevators in hotel %s:\n > ", hotel_name);
     scanf("%d", &elv_num);
   }
   *p = elv_num;
@@ -328,102 +327,83 @@ int show_sim(void)
   return 0;
 }
 
-void initial_state(char * hotel){
+void initial_state(char *hotel, int *floors_number, int *elev, int *elev_cap,int *people_waiting,int *dest_arr){
   printf("\n=================\n");
-  printf("  INITIAL STATE\n=================\n\n ");
+  printf("  INITIAL STATE\n=================\n\n");
+
   print_hotel_name(hotel);
+  //create a copy of those:
+  char *h_c = hotel;
+  int *floor_n = floors_number;
+  int *elev_c = elev;
+  int *elev_cap_c = elev_cap;
+  int *people_w_c = people_waiting;
+  int *dest_a_c = dest_arr;
+
+  // struct Elevator{
+  //   int row;
+  //   int available;
+  // };
+  // struct Person{
+  //   int dest_floor;
+  //   int current_floor;
+  // };
+  //allocate space:
+  int **matrix = (int **)malloc(*floor_n * sizeof(int *));//store information about each elevator
+  if(matrix == NULL){
+    printf("Out of memory! Program terminated!\n");
+    //return -1;
+  }
+  for (int i = 0; i < *floor_n; i++) {//dealing with rows here
+    matrix[i] = (int *)malloc(*elev_c * sizeof(int));
+    if (matrix[i] == NULL) {
+        printf("Memory allocation failed!\n");
+        // return -1;
+    }
+  }//created matrix;
+  int column = 0;//we will move through the rows to set the coordinates of our elevators:
+  while(column < *elev_c){//set the coordinates of our elevators:
+    //set the location of each elevator:
+    if(column % 2 == 0){
+      //the elvator must be at the bottom:
+      matrix[*floor_n][column] = 1;
+    }else{
+      matrix[0][column] = 1;
+    }
+    column++;
+  }
+  //print the grid for elevators:
+  for(int i = 0; i < *floor_n;i++){
+    printf("\n");
+    for(int j = 0; j < *elev_c; j++){
+      printf("%d",matrix[i][j]);
+    }
+  }
+   //we need to keep track of two things: elevators and people;
+    //1.find out the dest floor of each person waiting
+    //2.we have to keep track of the row of each elevator
+    //3.how many people there are on each floor
+    //4.who wants where
+  free(h_c);
+  free(floor_n);
+  free(elev_c);
+  free(elev_cap_c);
+  free(people_w_c);
+  free(dest_a_c);
 }
 
 
 void print_hotel_name(char *hotel_n){
-  printf("++-----------------++\n");
-  printf("++  <%s>   ++\n", hotel_n);
-  printf("++-----+-----+-----++\n");
+  char str[100] = {0};//initialize str
+  int length = strl(hotel_n);
+  length -= 2;
+  for(int i = 0; i < length; ++i){
+    str[i] = '-';
+  }
+  printf("++--%s--++\n", str);
+  printf("++ %s ++\n", hotel_n);
+  printf("++--%s--++\n", str);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// int destination_floors(int floors, int p_w)
-// {
-//   // char *pointer = (char  *)malloc(sizeof(char)*floors*p_w*2);//10 floors, each at max 10 characters(a little bit more)
-//   // if(pointer == NULL){
-//   //   printf("Could not allocate memory for the arrays of values.");
-//   // }
-//   //array of pointers:
-//   //allocate:
-//   char *arr = (char *)malloc(sizeof(char)*p_w*2);
-//   if(arr == NULL){
-//     printf("Could not allocate memory for string storage.");
-//   }
-//   // char *temp = (char *)malloc(sizeof(char)*p_w*2);
-//   // for(int current_floor = 1; current_floor <= floors; current_floor++){
-//     int current_floor = 1;
-//     while(current_floor <= floors){//
-//     //each value of the row must be less or equal to the number of the floors;
-//     //the number of numbers will be from 2 to twenty(we must specify for each person):
-//     const size_t size = sizeof(char) * floors * 2;
-//     int done = 0;
-//       while(!done){
-//         done = 1;
-//         printf("Enter the destination floors of the people [floor: %d]:\n > ", current_floor);
-//         fgets(arr, size, stdin);
-//         printf("%s", arr);
-//         //assess the validity of our array:
-//         char c = 0;
-//         while((c != ',') && (c = *arr++) != '\0')//move through each character
-//         {
-//           if(c == '\n' || c == EOF){//skip the enters that are entered each time
-//             continue;
-//           }
-//           if((c + '0') > (floors))//(c + '0') is converting c to a number
-//           {
-//             printf("Wrong input, the destination floor %c ", c);
-//             printf("is out of range (0 to %d)!\n", floors - 1);
-//             done = 0;
-//           }else if((c + '0') == current_floor){
-//             printf("Wrong input, the destination floor cannot be the current floor!\n");
-//             done = 0;
-//           }
-          
-          
-//         }
-//         // arr++;
-//       }
-//     ++current_floor;
-//   }
-//   //free the memory:
-//   free(arr);
-//   return 0;
-// }
-// //---------------------------------------------------------------------------------------------------------------------
-// ///
-// /// This function parses the line:
-// /// @param *arr pointer to the line of the input of the destination_floors function
-// /// @param floors is the number of floors, type int
-// /// @param current_floor is the current floor, type int
-
-
-/// @return the truth value;(-1 if the element's value is out of range);
-// int parse(char *arr, int floors, int current_floor)
-// {
-  
-// }
-
-
 //---------------------------------------------------------------------------------------------------------------------
 ///
 ///The function computes the length of the array through a while loop;
@@ -433,8 +413,10 @@ void print_hotel_name(char *hotel_n){
 int strl(char arr[])
 {
   int i = 0;//length
-  while(arr[i] != '\0')
+  while(arr[i] != '\0'){
     i++;
+  }
+
   return i;
 }
 //---------------------------------------------------------------------------------------------------------------------
