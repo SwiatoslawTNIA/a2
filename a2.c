@@ -11,12 +11,12 @@
 //
 #include <stdio.h>
 #include <stdlib.h>
-enum {FALSE = 0, TRUE = 1};
+enum {FALSE = 0, TRUE = 1, ST_SIZE = 100};
 //function prototyping
-// long int strl(char arr[]);
-
+int strl(char arr[]);//string length
 void greeting(void);
-
+char *low(char *p);//string to lowercase
+int str_com(char str1[], char str2[]);//compares two strings
 
 
 
@@ -27,6 +27,9 @@ int *elev_count(char *totel_name);
 int *elevCapacity(char *hotel_name);
 int *people_w(void);
 int *destination_f(int *floors, int *people_w);
+int show_sim(void);
+void initial_state(char *hotel);
+void print_hotel_name(char *hotel_n);
 
 
 int main(void)
@@ -38,23 +41,32 @@ int main(void)
 }
 int header(void)
 {
-  
-   greeting();
+  greeting();
   char *hotel = hotel_name();//return a pointer to the string hotelName;
   int *floors_num = floors(hotel);//collect the number of floors;
   int *elevators = elev_count(hotel);//collect the number of elevators;
   int *elev_cap = elevCapacity(hotel);//collect the elevator capacity;
   int *people_waiting = people_w();//collect the amount of waiting people;
   int *dest_arr = destination_f(floors_num, people_waiting);
-  printf("%s, %d, %d, %d, %d\n", hotel, *floors_num, *elevators, *elev_cap, *people_waiting);
+  // printf("%s, %d, %d, %d, %d\n", hotel, *floors_num, *elevators, *elev_cap, *people_waiting);
   //check for available memory
   
   if(hotel == NULL || elevators == NULL || people_waiting == NULL || dest_arr == NULL || floors_num == NULL){
+    free(hotel);
+    free(floors_num);
+    free(elevators);
+    free(elev_cap);
+    free(people_waiting);
+    free(dest_arr);
     return -1;
   }
   //simulation:
-  
-
+  int show_simulation = show_sim();
+  if(show_simulation == 2){
+    initial_state(hotel);
+  }else if(show_simulation == 1){
+    
+  }
 
 
   //freeing the memory
@@ -71,7 +83,7 @@ int header(void)
 void greeting(void)
 {
   printf("____________________\n");
-  printf("____   ____   ____ \n");
+  printf(" ____   ____   ____ \n");
   printf("|____  |____  |____|\n");
   printf("|____   ____| |     \n");
   printf("____________________\n");
@@ -87,15 +99,24 @@ void greeting(void)
 /// @param void function doesn't take any input value
 /// 
 /// @return the array pointer to the name of the hotel, that was dinamically allocated;
-//
 char *hotel_name(void)
 {
   char *string = (char *)malloc(sizeof(size_t) * 100);//long strings will not be used;
   if(string == NULL){
     printf("Unable to allocate memory for a name of the hotel.");
   }
-  printf("Enter the name of the hotel:\n >");
+  printf("Enter the name of the hotel:\n > ");
   fgets(string, sizeof(size_t)* 100, stdin);
+  //remove that enter:
+  char *str_c = string;
+  while(*str_c  != '\n'){
+    //move until it is equal
+    str_c++;
+  }
+  //when it is equal, we just set the value to \0:
+  *str_c = '\0';//yes now it is removed
+  //move all the letters to uppercase:
+  
   return string;
 }
 //---------------------------------------------------------------------------------------------------------------------
@@ -194,7 +215,8 @@ int *people_w(void)
 /// @param int *floors takes the int pointer of the int people_w
 /// @param int *people_w takes the int pointer of the int people_w
 /// @return the integer pointer to the array of destinations of each person
-int *destination_f(int *floors, int *people_w){
+int *destination_f(int *floors, int *people_w)
+{
   //plan
   /*
     move through each of the floor, 
@@ -256,6 +278,80 @@ int *destination_f(int *floors, int *people_w){
   // arr_c = NULL;//nullify our pointer
   return arr;
 }
+//---------------------------------------------------------------------------------------------------------------------
+///
+/// This is an example header comment. Here, you explain, what the
+/// function does. Copypaste and adapt it!
+///
+/// @param numbers an array to check
+/// @param length The length of the array. If this text is too long you can 
+///        continue at the next line
+///
+/// @return the highest number
+int show_sim(void)
+{
+  int done = FALSE;
+  while(done == FALSE){
+    printf("Show the initial state? (\"yes\"/\"no\"):\n > ");
+    char str[100];
+    scanf("%s", str);
+    int length = strl(str);//check the length
+    if(length > 3){
+      continue;
+    }else if(length == 3){ //convert the string to lowercase:
+    //if the length of the string is 3:
+      char *str_p = low(str);
+      if(str_com(str_p, "yes")){//compare the strings
+        // printf("\n <yes>\n");
+        return 2;
+      }else if(str_com(str_p, "no ")){
+        // printf("\n <no>\n");
+        return 1;
+      }
+    }else if(length == 2){
+      char *str_p = low(str);
+      if(str_com(str_p, "yes")){//compare the strings
+        // printf("\n <yes>\n");
+        return 2;
+      }else if(str_com(str_p, "no")){
+        // printf("\n <no>\n");
+        return 1;
+      }
+    }
+    
+  }
+  return 0;
+}
+
+void initial_state(char * hotel){
+  printf("\n=================\n");
+  printf("  INITIAL STATE\n=================\n\n ");
+  print_hotel_name(hotel);
+}
+
+
+void print_hotel_name(char *hotel_n){
+  printf("++-----------------++\n");
+  printf("++  <%s>   ++\n", hotel_n);
+  printf("++-----+-----+-----++\n");
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // int destination_floors(int floors, int p_w)
 // {
 //   // char *pointer = (char  *)malloc(sizeof(char)*floors*p_w*2);//10 floors, each at max 10 characters(a little bit more)
@@ -328,15 +424,54 @@ int *destination_f(int *floors, int *people_w){
 ///The function computes the length of the array through a while loop;
 ///
 /// @param arr[] is an array;
-/// @return tthe length of the array
-// long int strl(char arr[])
-// {
-//   int i = 0;//length
-//   while(arr[i] != '\0')
-//     i++;
-//   return i;
-// }
-
+/// @return the length of the array
+int strl(char arr[])
+{
+  int i = 0;//length
+  while(arr[i] != '\0')
+    i++;
+  return i;
+}
+//---------------------------------------------------------------------------------------------------------------------
+///
+///The function converts the string to its lowercase equivalent
+///
+/// @param char *b takes a pointer to the string, to lowercase it;
+/// @return the pointer to the lowercased string.
+char *low(char *b)
+{
+  char *b_c = b;
+  while(*b != '\0')
+  {
+    if(*b >= 65 && *b <= 90){
+      *b = *b + 32;
+    }
+    b++;
+  }
+  //add that newLine
+  *b = '\n';
+  return b_c;
+}
+//---------------------------------------------------------------------------------------------------------------------
+///
+///The function compares two strings and outputs 0 if they do not match and 1 if they match
+///
+/// @param char *str2[]  a pointer to the first string (for comparison)
+/// @param char str1[]  a pointer to the second string
+/// @return the pointer to the lowercased string.
+//compare stwo strings:
+int str_com(char str1[], char str2[]){
+  int same = TRUE;
+  int i = 0;
+  while(str1[i] != '\0' && str2[i] != '\0'){
+    if(str1[i] != str2[i]){
+      same = FALSE;
+      break;
+    }
+    i++;
+  }
+  return same;
+}
 
 
 
