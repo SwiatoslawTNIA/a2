@@ -17,6 +17,7 @@ int strl(char arr[]);//string length
 void greeting(void);
 char *low(char *p);//string to lowercase
 int str_com(char str1[], char str2[]);//compares two strings
+char *up(char *b);//string to uppercase
 
 
 
@@ -109,14 +110,15 @@ char *hotel_name(void)
   fgets(string, sizeof(size_t)* 100, stdin);
   //remove that enter:
   char *str_c = string;
+  char *str_c_2 = string;
   while(*str_c  != '\n'){
     //move until it is equal
     str_c++;
   }
   //when it is equal, we just set the value to \0:
   *str_c = '\0';//yes now it is removed
-  //move all the letters to uppercase:
-  
+  //convert all the letters to uppercase:
+  up(str_c_2);
   return string;
 }
 //---------------------------------------------------------------------------------------------------------------------
@@ -132,10 +134,12 @@ int *floors(char *hotel_name)
     printf("Out of memory! Program terminated!\n");
     return p;
   }
-  printf("Enter the number of floors in hotel %s:\n > ", hotel_name);    int digit  = 0;
+  printf("Enter the number of floors in hotel %s:\n > ", hotel_name);    
+  int digit  = 0;
   scanf("%d", &digit);
   while( (digit > 10 || digit < 3)){      
     printf("Wrong input, the number of floors must be between 3 and 10!\n");
+    printf("Enter the number of floors in hotel %s:\n > ", hotel_name);    
     scanf("%d", &digit);
   }
   *p = digit;
@@ -179,8 +183,9 @@ int *elevCapacity(char *hotel_name)
   printf("Enter the capacity of elevators in hotel %s:\n > ", hotel_name);
   int elv_cap  = 0;
   scanf("%d", &elv_cap);
-  while( (elv_cap < 0 || elv_cap > 9)){
+  while( (elv_cap <= 0 || elv_cap > 9)){
     printf("Wrong input, the capacity of elevators must be between 1 and 9 person(s)!\n");
+    printf("Enter the capacity of elevators in hotel %s:\n > ", hotel_name);
     scanf("%d", &elv_cap);
   }
   *elv_c_p = elv_cap;
@@ -449,7 +454,26 @@ char *low(char *b)
     b++;
   }
   //add that newLine
-  *b = '\n';
+  *b = '\0';
+  return b_c;
+}
+///
+///The function converts the string to its lowercase equivalent
+///
+/// @param char *b takes a pointer to the string, to uppercase it;
+/// @return the pointer to the uppercased string.
+char *up(char *b)
+{
+  char *b_c = b;
+  while(*b != '\0')
+  {
+    if(*b >= 97 && *b <= 122){
+      *b = *b - 32;
+    }
+    b++;
+  }
+  //add that newLine
+  *b = '\0';
   return b_c;
 }
 //---------------------------------------------------------------------------------------------------------------------
