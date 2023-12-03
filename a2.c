@@ -29,6 +29,8 @@ int *destination_f(int *floors, int *people_w);
 int show_sim(void);
 void initial_state(char * hotel, int *floors_number, int *elev, int *elev_cap,int *people_waiting,int *dest_arr);
 void print_hotel_name(char *hotel_n);
+struct Elevator* build_elev(int *elev);
+struct Person* build_people(int *floors, int *people_waiting);
 
 
 int main(void)
@@ -69,12 +71,12 @@ int header(void)
 
 
   //freeing the memory
-  free(hotel);
-  free(floors_num);
-  free(elevators);
-  free(elev_cap);
-  free(people_waiting);
-  free(dest_arr);
+  // free(hotel);
+  // free(floors_num);
+  // free(elevators);
+  // free(elev_cap);
+  // free(people_waiting);
+  // free(dest_arr);
   return 0;
 }
 //---------------------------------------------------------------------------------------------------------------------
@@ -127,7 +129,7 @@ char *hotel_name(void)
 int *floors(char *hotel_name)
 {
   //dynamic memory allocation:
-  int *p = (int *)malloc(sizeof(int));
+  int *p = (int *)malloc(sizeof(size_t));
   if(p == NULL){
     printf("Out of memory! Program terminated!\n");
     return p;
@@ -150,7 +152,7 @@ int *floors(char *hotel_name)
 /// @return the pointer to the number of elevators;
 int *elev_count(char *hotel_name)
 {
-  int *p = malloc(sizeof(int));
+  int *p = malloc(sizeof(size_t));
   if(p == NULL){
     printf("Out of memory! Program terminated!\n");
     return p;
@@ -174,7 +176,7 @@ int *elev_count(char *hotel_name)
 /// @return the int pointer to the capacity of each of the elevators;
 int *elevCapacity(char *hotel_name)
 {
-  int *elv_c_p = malloc(sizeof(int));
+  int *elv_c_p = malloc(sizeof(size_t));
   if(elv_c_p == NULL){
     printf("Out of memory! Program terminated!\n");
     return elv_c_p;
@@ -197,7 +199,7 @@ int *elevCapacity(char *hotel_name)
 /// @return the number of waiting people
 int *people_w(void)
 {
-  int *p = malloc(sizeof(int));
+  int *p = malloc(sizeof(size_t));
   if(p == NULL){
     printf("Out of memory! Program terminated!\n");
     return p;
@@ -230,7 +232,7 @@ int *destination_f(int *floors, int *people_w)
     4.repeat until we move through all the floors
 
   */
-  int *arr = malloc((sizeof(int)* (*people_w) * (*floors)));//the size of our array; + our num;
+  int *arr = malloc((sizeof(size_t)* (*people_w) * (*floors)));//the size of our array; + our num;
   //create a pointer copy:
   if(arr == NULL){
     printf("Out of memory! Program terminated!\n");
@@ -326,74 +328,135 @@ int show_sim(void)
   }
   return 0;
 }
-
-void initial_state(char *hotel, int *floors_number, int *elev, int *elev_cap,int *people_waiting,int *dest_arr){
+struct Elevator{
+  int floor;
+  int cap;
+  int available;
+};
+struct Person{
+  int current_floor;
+  int dest_floor;
+};
+void initial_state(char *hotel, int *floors_number, int *elev, int *elev_cap,int *people_waiting,int *dest_arr)
+{
   printf("\n=================\n");
   printf("  INITIAL STATE\n=================\n\n");
 
   print_hotel_name(hotel);
-  //create a copy of those:
+  //create a copy of the values:
   char *h_c = hotel;
   int *floor_n = floors_number;
   int *elev_c = elev;
   int *elev_cap_c = elev_cap;
   int *people_w_c = people_waiting;
   int *dest_a_c = dest_arr;
-
-  // struct Elevator{
-  //   int row;
-  //   int available;
-  // };
-  // struct Person{
-  //   int dest_floor;
-  //   int current_floor;
-  // };
-  //allocate space:
-  int **matrix = (int **)malloc(*floor_n * sizeof(int *));//store information about each elevator
-  if(matrix == NULL){
+  //allocate memory to structs:
+  struct Elevator *elevator_space = build_elev(elev);
+  struct Person *people_space = build_people(floor_n, people_w_c);
+  if(elevator_space == NULL || people_space == NULL){
     printf("Out of memory! Program terminated!\n");
-    //return -1;
+    // return -1;
   }
-  for (int i = 0; i < *floor_n; i++) {//dealing with rows here
-    matrix[i] = (int *)malloc(*elev_c * sizeof(int));
-    if (matrix[i] == NULL) {
-        printf("Memory allocation failed!\n");
-        // return -1;
+  //create a copy of the pointers;
+  //write to this memory:
+  struct Elevator *esc = elevator_space;//copied
+  struct Person *psc = people_space;//copied
+  //initialize elevators:
+  for(int i = 0; i < *elev; i++)
+  {
+    esc->cap = *elev_cap_c;
+    if(i % 2 == 0)
+    {//it's even
+      esc->floor = *floor_n;
+    }else
+    {
+      esc->floor = 0;
     }
-  }//created matrix;
-  int column = 0;//we will move through the rows to set the coordinates of our elevators:
-  while(column < *elev_c){//set the coordinates of our elevators:
-    //set the location of each elevator:
-    if(column % 2 == 0){
-      //the elvator must be at the bottom:
-      matrix[*floor_n][column] = 1;
-    }else{
-      matrix[0][column] = 1;
+    esc->available = *elev_cap_c;
+    esc++;
+  }//we've written the data to the elevators;
+  //initialize people:
+  for(int i = 0; i < *floor_n;i++)
+  {
+    //for each person on the floor:
+    for(int j = 0; j < *people_waiting;j++)
+    {
+    psc->current_floor = i;
+    psc->dest_floor = *dest_a_c;
+    ++dest_a_c;
+    ++psc;//update the pointer
     }
-    column++;
+
+  } 
+  //create another copy of dest_array because that older pointer now points to nothing;
+  struct Elevator *esc_c = elevator_space;
+  struct Person *psc_c = people_space;
+
+  printf("\n\n\n");
+  for(int i = 0; i < *elev_c;i++){
+    printf("<%d, %d, %d>", esc_c->available, esc_c->cap, esc_c->floor);
+    ++esc_c;
   }
+  printf("\n");
+  for(int i = 0; i < (*floor_n )* (*people_w_c);i++){
+    printf("<%d, %d>", psc_c->current_floor, psc_c->dest_floor);
+    ++psc_c;
+  }
+
   //print the grid for elevators:
-  for(int i = 0; i < *floor_n;i++){
-    printf("\n");
-    for(int j = 0; j < *elev_c; j++){
-      printf("%d",matrix[i][j]);
-    }
-  }
+
    //we need to keep track of two things: elevators and people;
     //1.find out the dest floor of each person waiting
     //2.we have to keep track of the row of each elevator
     //3.how many people there are on each floor
     //4.who wants where
+  //we have to free the original data:
   free(h_c);
-  free(floor_n);
-  free(elev_c);
-  free(elev_cap_c);
-  free(people_w_c);
-  free(dest_a_c);
+  free(floors_number);
+  free(elev);
+  free(elev_cap);
+  free(people_waiting);
+  free(dest_arr);
+  free(elevator_space);
+  free(people_space);
+}
+//---------------------------------------------------------------------------------------------------------------------
+///
+/// function dynamically allocates memory for an array of structures with specific 
+///
+/// @param *elev pointer to the number of elevators;
+///
+/// @return the pointer to the allocated space for all elevators structs
+//
+struct Elevator* build_elev(int *elev)
+{
+  struct Elevator* elevators = (struct Elevator*)malloc(sizeof(struct Elevator) * *elev);
+  if(elevators == NULL){
+    printf("Unable to allocate memory for a name of the hotel.");
+    return NULL;
+  }
+  return elevators;
+}
+//---------------------------------------------------------------------------------------------------------------------
+///
+/// function dynamically allocates memory for an array of structures with specific type struct Person
+///
+/// @param *floors pointer to the number of floors;
+/// @param *people_waiting pointer to the number of people_waiting;
+/// @return the pointer to the allocated space for all elevators structs
+//
+struct Person* build_people(int *floors, int *people_waiting)
+{
+  struct Person* people = (struct Person*)malloc(sizeof(struct Person)* (*floors) * (*people_waiting));
+  if(people == NULL){
+    printf("Unable to allocate memory for a name of the hotel.");
+    return NULL;
+  }
+  return people;
 }
 
-
-void print_hotel_name(char *hotel_n){
+void print_hotel_name(char *hotel_n)
+{
   char str[100] = {0};//initialize str
   int length = strl(hotel_n);
   length -= 2;
@@ -466,7 +529,8 @@ char *up(char *b)
 /// @param char str1[]  a pointer to the second string
 /// @return the pointer to the lowercased string.
 //compare stwo strings:
-int str_com(char str1[], char str2[]){
+int str_com(char str1[], char str2[])
+{
   int same = TRUE;
   int i = 0;
   while(str1[i] != '\0' && str2[i] != '\0'){
