@@ -272,7 +272,6 @@ int *destination_f(int *floors, int *people_w)
         {
           a[p][j] = num;
           can_proceed = TRUE;
-          // arr_c++;//now arr_c points to the next valid integer place in our memory
             j++;
           }
         }
@@ -368,7 +367,7 @@ void initial_state(char *hotel, int *floors_number, int *elev, int *elev_cap,int
   int *elev_c = elev;
   int *elev_cap_c = elev_cap;
   int *people_w_c = people_waiting;
-  int *dest_a_c = dest_arr;//this is the problem
+  int *dest_a_c = dest_arr;//this was the problem
   //allocate memory to structs:
   struct Elevator *elevator_space = build_elev(elev);
   struct Person *people_space = build_people(floor_n, people_w_c);
@@ -399,17 +398,15 @@ void initial_state(char *hotel, int *floors_number, int *elev, int *elev_cap,int
     esc++;
   }//we've written the data to the elevators;
   //initialize people:
-  printf("\nThe current floor:");
+  // printf("\nThe current floor:");
   for(int i = 1; i <= *floor_n; i++)
   {
     //for each person on the floor:
     for(int j = 0; j < *people_waiting; j++)
     {
     psc->current_floor = i;
-    // printf("%d", psc->current_floor);
-    //assignment is correct
-    printf("%d | ", *dest_arr);
-    printf("%c", *dest_a_c);
+    // printf("%d | ", *dest_arr);
+    // printf("%c", *dest_a_c);
     psc->dest_floor = *dest_a_c;
     ++dest_a_c;
     ++psc;//update the pointer
@@ -622,21 +619,42 @@ void print_hotel_name(char *hotel_n, int *elev_count)
   }
   printf("+%s++\n", str);
   //second row:
-  int second_row_l = (total - strl(hotel_n)) / 2;
-  int i = 0;
-  for(; i < second_row_l; i++){
-    str_b[i] = ' ';
-  }
-  int j = 0;
-  for(; j < strl(hotel_n);j++)
+
+  int second_row_l = (total - strl(hotel_n));
+
+  if(second_row_l % 2 == 0)
   {
-    str_b[i + j] = hotel_n[j];
+    int i = 0;
+    for(; i < second_row_l / 2 - 1; i++){//odd if string is even
+      str_b[i] = ' ';
+    }
+    int j = 0;
+    for(; j < strl(hotel_n);j++)
+    {
+      str_b[i + j] = hotel_n[j];
+    }
+    for(int k = 0; k < second_row_l / 2; k++)
+    {
+      str_b[i + j + k] = ' ';
+    }
+    printf("++%s++\n", str_b);
+  }else{
+    int i = 0;
+    for(; i < second_row_l / 2; i++){
+      str_b[i] = ' ';
+    }
+    int j = 0;
+    for(; j < strl(hotel_n);j++)
+    {
+      str_b[i + j] = hotel_n[j];
+    }
+    for(int k = 0; k < second_row_l / 2; k++)
+    {
+      str_b[i + j + k] = ' ';
+    }
+    printf("++%s++\n", str_b);
   }
-  for(int k = 0; k < second_row_l; k++)
-  {
-    str_b[i + j + k] = ' ';
-  }
-  printf("++%s++\n", str_b);
+  // printf("%d", second_row_l);
   //third row:
   // char str3[100] = {0};
   // int p = 6;
