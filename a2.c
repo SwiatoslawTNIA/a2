@@ -55,6 +55,7 @@ int header(void)
   int *elev_cap = elevCapacity(hotel);//collect the elevator capacity;
   int *people_waiting = people_w();//collect the amount of waiting people;
   int *dest_arr = destination_f(floors_num, people_waiting);
+
   if(hotel == NULL || elevators == NULL || people_waiting == NULL || dest_arr == NULL || floors_num == NULL){
     free(hotel);
     free(floors_num);
@@ -235,16 +236,16 @@ int *destination_f(int *floors, int *people_w)
   */
   int *arr = calloc(1, (sizeof(size_t)* (*people_w) * (*floors + 1)));//the size of our array; + our num;
   //create array of arrays:
-  int a[*floors + 1][*people_w];
+  int a[*floors][*people_w];
   
   if(arr == NULL)
   {
     printf("Out of memory! Program terminated!\n");
     return arr;
   }
-  int current_floor = 1, can_proceed = FALSE, p = 0, j = 0;
-  while(current_floor <= *floors){//!carefull with the floors
-    printf("Enter the destination floors of the people [floor: %d]:\n > ", current_floor - 1);
+  int current_floor = 0, can_proceed = FALSE, p = 0, j = 0;
+  while(current_floor < *floors){//!carefull with the floors
+    printf("Enter the destination floors of the people [floor: %d]:\n > ", current_floor);
     char str[50];
     fgets(str, 50, stdin);
     for(int i = 0; str[i] != '\n';i++){
@@ -255,7 +256,7 @@ int *destination_f(int *floors, int *people_w)
       int num = atoi(&str[i]);
       if((num < 0) || num > (*floors))
       {
-        printf("Wrong input, the destination floor %d is out of range (0 to %d)!\n",num, *floors - 1);
+        printf("Wrong input, the destination floor %d is out of range (0 to %d)!\n",num, *floors);
         can_proceed = FALSE;
         break;
       }else if(num == current_floor)
@@ -265,7 +266,7 @@ int *destination_f(int *floors, int *people_w)
         break;
       }
       //if these conditions are fulfilled:
-      if((num >= 0) && (num < (*floors)))
+      if((num >= 0) && (num <= (*floors)))
       {
         if(num != current_floor)
         {
@@ -284,22 +285,21 @@ int *destination_f(int *floors, int *people_w)
   }
   for (int i = 0; i < *floors; i++)
   {
+    printf("\n>>");
+
     for (int j = 0; j < *people_w; j++)
     {
       printf("%d", a[i][j]);
     }
-    printf("\n>>");
   }
   int *arr_c = arr;
-  for (int i = *floors; i > 0; --i)
+  for (int i = *floors - 1; i >= 0; i--)//we had to start with floor - 1;
   {
     for (int j = 0; j < *people_w; j++)
     {
       *arr_c = a[i][j];
       arr_c++;
-    }
-    
-    
+    }    
   }
   return arr;
 }
@@ -358,9 +358,6 @@ struct Person{
   int dest_floor;
 };
 
-
-
-
 void initial_state(char *hotel, int *floors_number, int *elev, int *elev_cap,int *people_waiting, int *dest_arr)
 {
   printf("\n=================\n");
@@ -371,7 +368,7 @@ void initial_state(char *hotel, int *floors_number, int *elev, int *elev_cap,int
   int *elev_c = elev;
   int *elev_cap_c = elev_cap;
   int *people_w_c = people_waiting;
-  int *dest_a_c = dest_arr;
+  int *dest_a_c = dest_arr;//this is the problem
   //allocate memory to structs:
   struct Elevator *elevator_space = build_elev(elev);
   struct Person *people_space = build_people(floor_n, people_w_c);
@@ -390,11 +387,11 @@ void initial_state(char *hotel, int *floors_number, int *elev, int *elev_cap,int
     if(i % 2 == 0)
     {//it's even
       // esc->floor = *floor_n;
-      esc->floor = 0;
+      esc->floor = *floor_n;//standard notation
 
     }else
     {
-      esc->floor = *floor_n;
+      esc->floor = 1;
     }
     // esc->cur = *elev_cap_c;
     esc->current_load = 0;
@@ -402,34 +399,39 @@ void initial_state(char *hotel, int *floors_number, int *elev, int *elev_cap,int
     esc++;
   }//we've written the data to the elevators;
   //initialize people:
-  for(int i = 0; i <= *floor_n; i++)
+  printf("\nThe current floor:");
+  for(int i = 1; i <= *floor_n; i++)
   {
     //for each person on the floor:
     for(int j = 0; j < *people_waiting; j++)
     {
     psc->current_floor = i;
+    // printf("%d", psc->current_floor);
+    //assignment is correct
+    printf("%d | ", *dest_arr);
+    printf("%c", *dest_a_c);
     psc->dest_floor = *dest_a_c;
     ++dest_a_c;
     ++psc;//update the pointer
     }
 
   } 
-  //create another copy of dest_array because that older pointer now points to nothing;
-  //print the elevators:
-  // struct Elevator *esc_c = elevator_space;
-  // struct Person *psc_c = people_space;
+  // create another copy of dest_array because that older pointer now points to nothing;
+  // print the elevators:
+  struct Elevator *esc_c = elevator_space;
+  struct Person *psc_c = people_space;
 
-  // printf("\n\n\n");
-  // for(int i = 0; i < *elev_c;i++){
-  //   printf("<%d, %d, %d>", esc_c->current_load, esc_c->cap, esc_c->floor);
-  //   ++esc_c;
-  // }
-  // printf("\n");
-  // for(int i = 0; i < (*floor_n )* (*people_w_c);i++){
-  //   printf("<%d, %d>", psc_c->current_floor, psc_c->dest_floor);
-  //   ++psc_c;
-  // }
-  // printf("\n");
+  printf("\n\n\nHey:  ");
+  for(int i = 0; i < *elev_c;i++){
+    printf("<%d, %d, %d>", esc_c->current_load, esc_c->cap, esc_c->floor);
+    ++esc_c;
+  }
+  printf("\n");
+  for(int i = 0; i < (*floor_n )* (*people_w_c);i++){
+    printf("<%d, %d>", psc_c->current_floor, psc_c->dest_floor);
+    ++psc_c;
+  }
+  printf("\n");
   struct Elevator *esc_c_1 = elevator_space;
   struct Person *psc_c_1 = people_space;
   //print the grid for elevators:
@@ -475,14 +477,14 @@ int start_sim(char *hotel_n, struct Elevator *elevator_space, struct Person *peo
   int *floor = floors;
   int *p_c = people;//we need to reverse our array of people values:
   // int *people_r = reverse(people);
-  int current_floor = 0;
+  int current_floor = 1;
   // printf("%d", *en);
   print_hotel_name(hotel_n, en);
   print_top(elev_number);
   while(current_floor <= *floor)
   {
     print_row(es, ps, elev_number,  current_floor, p_c, floor);//floors from 0 to 9
-    if(current_floor != *floor - 1){
+    if(current_floor != *floor){
       print_middle(en);
     }
     
@@ -520,10 +522,11 @@ void print_row(struct Elevator *ep, struct Person *pp, int *en, int current_floo
   //now it points to str[1];
   //move through each person:
   int count = 1;
-  for(int i = 0; i < *people_waiting * (*floors);i++){
+  for(int i = 1; i <= *people_waiting * (*floors);i++){
 
-      if(ppp->current_floor == current_floor - 1)
+      if(ppp->current_floor == current_floor)
       {
+        printf("%d", ppp->dest_floor);
         str[count] = '0' + ppp->dest_floor;
         str[count + 1] = ',';
         count += 2;
@@ -594,7 +597,7 @@ struct Elevator* build_elev(int *elev)
 //
 struct Person* build_people(int *floors, int *people_waiting)
 {
-  struct Person* people = (struct Person*)malloc(sizeof(struct Person)* (*floors + 1) * (*people_waiting));
+  struct Person* people = (struct Person*)malloc(sizeof(struct Person) * (*floors) * (*people_waiting));
   if(people == NULL){
     printf("Unable to allocate memory for a name of the hotel.");
     return NULL;
