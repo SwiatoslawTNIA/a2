@@ -81,7 +81,7 @@ int header(void)
   }else{
     main_sim(hotel, floors_num, elevators, elev_cap, people_waiting, dest_arr);
   }
-  //freeing the memory
+  // freeing the memory
   // free(hotel);
   // free(floors_num);
   // free(elevators);
@@ -789,6 +789,9 @@ int str_com(char str1[], char str2[])
 {
   int same = TRUE;
   int i = 0;
+  if(strl(str1) != strl(str2)){
+    same = FALSE;
+  }
   while(str1[i] != '\0' && str2[i] != '\0'){
     if(str1[i] != str2[i]){
       same = FALSE;
