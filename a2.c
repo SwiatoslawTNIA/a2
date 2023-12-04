@@ -31,12 +31,15 @@ void initial_state(char * hotel, int *floors_number, int *elev, int *elev_cap,in
 void print_hotel_name(char *hotel_n, int *elev_count);
 struct Elevator* build_elev(int *elev);
 struct Person* build_people(int *floors, int *people_waiting);
-int start_sim(char *h_n, struct Elevator *elevator_space, struct Person *people_space, int *en, int *floors, int *people);
+int show_simulation(char *h_n, struct Elevator *elevator_space, struct Person *people_space, int *en, int *floors, int *people);
 void print_top(int *elev_number);
 void print_row(struct Elevator *ep, struct Person *pp, int *en, int current_floor, int *people_waiting, int *floors);
 void print_middle(int *elev_number);
-// int *reverse(int *arr, int* people_waiting);
 int int_arr_length(int *arr);
+int skip_sim(void);
+void print_top_(int *elev_number);
+int main_sim(char *hotel, int *floors_number, int *elev, int *elev_cap,int *people_waiting, int *dest_arr);
+
 
 
 int main(void)
@@ -44,6 +47,8 @@ int main(void)
   int rsp = header();
   if(rsp == -1)
     return -1;
+  else if(rsp == 0)
+    return 0;
   
 }
 int header(void)
@@ -69,11 +74,13 @@ int header(void)
   int show_simulation = show_sim();
   if(show_simulation == 2){
     initial_state(hotel, floors_num, elevators, elev_cap, people_waiting, dest_arr);
-  }else if(show_simulation == 1){
-    
   }
-
-
+  int skip = skip_sim();
+  if(skip == 1){
+    return 0;
+  }else{
+    main_sim(hotel, floors_num, elevators, elev_cap, people_waiting, dest_arr);
+  }
   //freeing the memory
   // free(hotel);
   // free(floors_num);
@@ -81,6 +88,11 @@ int header(void)
   // free(elev_cap);
   // free(people_waiting);
   // free(dest_arr);
+  return 0;
+}
+int main_sim(char *hotel, int *floors_number, int *elev, int *elev_cap,int *people_waiting, int *dest_arr)
+{
+  
   return 0;
 }
 //---------------------------------------------------------------------------------------------------------------------
@@ -100,7 +112,7 @@ void greeting(void)
 }
 //---------------------------------------------------------------------------------------------------------------------
 /// dynamically allocates memory for the hotelname,gets the name through fgets and
-// returns a pointer to that name
+/// returns a pointer to that name
 /// @param void function doesn't take any input value
 /// 
 /// @return the array pointer to the name of the hotel, that was dinamically allocated;
@@ -282,15 +294,15 @@ int *destination_f(int *floors, int *people_w)
       j = 0;
     }
   }
-  for (int i = 0; i < *floors; i++)
-  {
-    printf("\n>>");
+  // for (int i = 0; i < *floors; i++)
+  // {
+  //   printf("\n>>");
 
-    for (int j = 0; j < *people_w; j++)
-    {
-      printf("%d", a[i][j]);
-    }
-  }
+  //   for (int j = 0; j < *people_w; j++)
+  //   {
+  //     printf("%d", a[i][j]);
+  //   }
+  // }
   int *arr_c = arr;
   for (int i = *floors - 1; i >= 0; i--)//we had to start with floor - 1;
   {
@@ -346,6 +358,30 @@ int show_sim(void)
   }
   return 0;
 }
+/// @brief prompts and ask about the continuation of the simulation
+/// @param  void no parameters
+/// @return return the integer representation of the answer
+int skip_sim(void){
+  int done = FALSE;
+  while(done == FALSE){
+    printf("Start the simulation? (\"start\"/\"skip\"):\n > ");
+    char str[100];
+    scanf("%s", str);
+    int length = strl(str);//check the length
+    if(length > 5){
+      continue;
+    }
+    char *str_p = low(str);
+    if(str_com(str_p, "start")){//compare the strings
+    done = TRUE;
+      return 2;
+    }else if(str_com(str_p, "skip")){  
+      done = TRUE; 
+      return 1;
+    }    
+  }
+  return 0;
+}
 struct Elevator{
   int floor;
   int cap;
@@ -356,7 +392,13 @@ struct Person{
   int current_floor;
   int dest_floor;
 };
-
+/// @brief controls the initial state of the simulation show(the first display of the hotel)
+/// @param hotel a pointer to the hotel name
+/// @param floors_number a pointer to the number of floors
+/// @param elev a pointer to the number of elevators
+/// @param elev_cap a pointer to the number of elevator capacity
+/// @param people_waiting a pointer to the number of people waiting
+/// @param dest_arr a pointer to the array of all people's destinations
 void initial_state(char *hotel, int *floors_number, int *elev, int *elev_cap,int *people_waiting, int *dest_arr)
 {
   printf("\n=================\n");
@@ -415,20 +457,20 @@ void initial_state(char *hotel, int *floors_number, int *elev, int *elev_cap,int
   } 
   // create another copy of dest_array because that older pointer now points to nothing;
   // print the elevators:
-  struct Elevator *esc_c = elevator_space;
-  struct Person *psc_c = people_space;
+  // struct Elevator *esc_c = elevator_space;
+  // struct Person *psc_c = people_space;
 
-  printf("\n\n\nHey:  ");
-  for(int i = 0; i < *elev_c;i++){
-    printf("<%d, %d, %d>", esc_c->current_load, esc_c->cap, esc_c->floor);
-    ++esc_c;
-  }
-  printf("\n");
-  for(int i = 0; i < (*floor_n )* (*people_w_c);i++){
-    printf("<%d, %d>", psc_c->current_floor, psc_c->dest_floor);
-    ++psc_c;
-  }
-  printf("\n");
+  // printf("\n\n\nHey:  ");
+  // for(int i = 0; i < *elev_c;i++){
+  //   printf("<%d, %d, %d>", esc_c->current_load, esc_c->cap, esc_c->floor);
+  //   ++esc_c;
+  // }
+  // printf("\n");
+  // for(int i = 0; i < (*floor_n )* (*people_w_c);i++){
+  //   printf("<%d, %d>", psc_c->current_floor, psc_c->dest_floor);
+  //   ++psc_c;
+  // }
+  // printf("\n");
   struct Elevator *esc_c_1 = elevator_space;
   struct Person *psc_c_1 = people_space;
   //print the grid for elevators:
@@ -439,10 +481,7 @@ void initial_state(char *hotel, int *floors_number, int *elev, int *elev_cap,int
     //3.how many people there are on each floor
     //4.who wants where
     // printf("%d", *people_w_c);
-  start_sim(h_c, esc_c_1, psc_c_1 , elev_c, floor_n, people_w_c);//floors from 0 to 9
-  
-
-  
+  show_simulation(h_c, esc_c_1, psc_c_1 , elev_c, floor_n, people_w_c);//floors from 0 to 9
   //we have to free the original data:
   free(h_c);
   free(floors_number);
@@ -465,7 +504,7 @@ void initial_state(char *hotel, int *floors_number, int *elev, int *elev_cap,int
 /// @param int *floors floors number pointer
 /// @return 0;
 //
-int start_sim(char *hotel_n, struct Elevator *elevator_space, struct Person *people_space, int *en, int *floors, int *people)
+int show_simulation(char *hotel_n, struct Elevator *elevator_space, struct Person *people_space, int *en, int *floors, int *people)
 {
   //crete a copy:
   struct Elevator *es = elevator_space;
@@ -487,10 +526,18 @@ int start_sim(char *hotel_n, struct Elevator *elevator_space, struct Person *peo
     
     ++current_floor;
   }
-  print_top(elev_number);
+  print_top_(elev_number);
 
   return 0;
 }
+
+/// @brief prints the row of the hotel
+/// @param ep elevator pointer of type Elevator structure
+/// @param pp person pointer of type Person structure
+/// @param en pointer to the number of elevators
+/// @param current_floor the current floor
+/// @param people_waiting pointer to the amount of people waiting
+/// @param floors pointer to the array of all people's destinations
 void print_row(struct Elevator *ep, struct Person *pp, int *en, int current_floor, int *people_waiting, int *floors)
 {
   struct Elevator *epc = ep;  
@@ -523,7 +570,7 @@ void print_row(struct Elevator *ep, struct Person *pp, int *en, int current_floo
 
       if(ppp->current_floor == current_floor)
       {
-        printf("%d", ppp->dest_floor);
+        // printf("%d", ppp->dest_floor);
         str[count] = '0' + ppp->dest_floor;
         str[count + 1] = ',';
         count += 2;
@@ -536,7 +583,14 @@ void print_row(struct Elevator *ep, struct Person *pp, int *en, int current_floo
   printf("%s\n",str);
 }
 
+void print_elevators(struct Elevator *elevator_space, int elev_number, int *people){
+  printf("Elevators:\n");
+  for(int i = 0; i < elev_number; i++){
+    printf("%d: (",i);
+    printf(")\n");
 
+  }
+}
 ///
 ///the function prints the line to separate each row
 /// @return no return;
@@ -550,6 +604,20 @@ void print_top(int *elev_number)
   }
   printf("+\n");
 }
+///
+///the function prints the last line of the hotel
+/// @return no return;
+void print_top_(int *elev_number)
+{
+  printf("++");
+  int i = 0;
+  while(*elev_number > i){
+  printf("-----+");
+  ++i;
+  }
+  printf("+\n\n");
+}
+
 /// @brief prints the middle part of the structure (the space between the rows)
 /// @param elev_number accepts a number of elevators;
 void print_middle(int *elev_number){
@@ -654,19 +722,6 @@ void print_hotel_name(char *hotel_n, int *elev_count)
     }
     printf("++%s++\n", str_b);
   }
-  // printf("%d", second_row_l);
-  //third row:
-  // char str3[100] = {0};
-  // int p = 6;
-  // //repeat for every elevator:
-  // for(int a = 0; a < *elev_count; ++a){
-  //   for(int x = 0; x < 5; x++){
-  //     str3[x + a*p] = '-';
-  //   }
-  //   str3[a*p + 5] = '+';
-  // }
-  
-  // printf("++%s+\n", str3);
 }
 //---------------------------------------------------------------------------------------------------------------------
 ///
