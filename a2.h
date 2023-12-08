@@ -1,18 +1,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 enum {FALSE = 0, TRUE = 1, ST_SIZE = 100};
-static int steps = 0;
+ int step = 1;
 //structs
 
 struct Elevator{
   int floor;
   int cap;
-  int current_load;
-  int seq_n;
+  int available;
+  int index;
+  int direction;//1 upwards and 0 downwards
 };
 struct Person{
   int current_floor;
   int dest_floor;
+  int in_elevator;
+  int direction;
+  int elev;//will take the value of a specified elevator
 };
 
 //function prototyping
@@ -65,3 +69,28 @@ void free_everything(char *hotel, int *floors_num, int * elevators, int *elev_ca
 int *people_waiting, int *dest_arr);
 
 void strip(char arr[]);
+void print_simulation_step(void);
+
+void update_elevator_floor(struct Elevator *elevator_space, int *elev);
+
+int prove_destination(struct Person *people_space, int people_total);
+
+void update_people(struct Person *people_space, struct Elevator *elevator_space, int people_total,
+int *elev, int *floors_number);
+
+void print_elevators_bottom(struct Person *people_space, int *elev_number, int people_total, int *floors_number);
+
+int pos(int n);
+
+void update_people_direction(struct Person *people_space, int people_total);
+
+void people_message(int elev, int dest_floor);
+
+void update_elevators_direction(struct Elevator *elevator_space, int *elev, int *floors_number);
+
+void print_simulation_str(struct Elevator *elevator_space, struct Person *people_space, int *elev, 
+ int *people_waiting, int *floors_number);
+
+
+void print_simulation_row(struct Elevator *elevator_space, struct Person *people_space, int *elev, 
+int current_floor, int *people_waiting, int *floors_number);
