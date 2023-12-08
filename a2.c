@@ -80,7 +80,6 @@ struct Elevator *elevator_space, struct Person *people_space)
   //we would need to keep track of the of the elevator of each person;
  //1 for end result and 2 for all steps:
   //have to define steps;
-  printf("Hello world!");
   return 0;
 }
 /// @brief prints the elevators below each hotel structure
@@ -119,20 +118,18 @@ void free_everything(char *hotel, int *floors_num, int * elevators, int *elev_ca
 /// @return returns 1 if user selected end result, and 2 if user selected all steps
 int show_all_steps(void)
 {
-  puts("You've come.");
   int show = 0;
   int done = FALSE;
   while(done == FALSE)
   {
     printf("Show all steps of the simulation? (\"all steps\"/\"end result\"):\n > ");
     char str[100];
-    //clear the buffer:
-    scanf("%s", str);
-    if(str_com(str, "all steps"))
+    fgets(str, 99, stdin);
+    if(str_com(str, "all steps\n") || str_com(str, "all steps "))
     {//compare the strings
       show = 1;
       done = TRUE;
-    }else if(str_com(str, "end result"))
+    }else if(str_com(str, "end result\n") || str_com(str, "end result "))
     {
       show = 0;
       done = TRUE;
