@@ -1,14 +1,4 @@
 #include "a2.h"
-
-struct Hotel{
-  char name[20];
-  int *num_floors;
-  int *elev;
-  int *elev_cap;
-  int *people_waiting;
-  int *dest_arr;
-};
-
 /// @brief the main function
 /// @param  void takes no parameters, the application is not configured for arguments
 /// @return 0 if the application worked as concocted.
@@ -42,7 +32,7 @@ int header(void)
     return -1;
   }
 
-  int *dest_a_c = dest_arr;//this was the problem
+  int *dest_a_c = dest_arr;//we will change the dest array(probably)
 
   struct Elevator *elevator_space = build_elev(elevators, elev_cap, floors_num);
   struct Person *people_space = build_people(floors_num, people_waiting, dest_a_c);
@@ -55,18 +45,44 @@ int header(void)
   if(show_initial_state()){
     initial_state(hotel, floors_num, elevators, elev_cap, people_waiting, dest_arr, elevator_space, people_space);
   }
-  int skip = skip_sim();
-  if(skip == 1)
+  if(skip_sim())
   {
     free_everything(hotel, floors_num, elevators, elev_cap, people_waiting, dest_arr);
     return 0;
   }else
   {
+     //print the grid for elevators:
+   //we need to keep track of two things: elevators and people;
+    //1.find out the dest floor of each person waiting
+    //2.we have to keep track of the row of each elevator
+    //3.how many people there are on each floor
+    //4.which person is inside an elevator;
     // main_sim(hotel, floors_num, elevators, elev_cap, people_waiting, dest_arr);
   }
   // freeing the memory
   free_everything(hotel, floors_num, elevators, elev_cap, people_waiting, dest_arr);
   return 0;
+}
+int main_sim(char *hotel, int *floors_number, int *elev, int *elev_cap,int *people_waiting, int *dest_arr)
+{
+  //we would need to keep track of the of the elevator of each person;
+ //1 for end result and 2 for all steps:
+  int answer = show_steps();//have to define steps;
+  answer++;
+  return 0;
+}
+/// @brief 
+/// @param elevator_space 
+/// @param elev_number 
+/// @param people 
+void print_elevators(struct Elevator *elevator_space, int elev_number, int *people){
+  printf("Elevators:\n");
+  for(int i = 0; i < elev_number; i++)
+  {
+    printf("%d: (",i);
+    printf(")\n");
+
+  }
 }
 /// @brief free the  allocated data
 /// @param hotel pointer to the hotel name
@@ -85,19 +101,6 @@ void free_everything(char *hotel, int *floors_num, int * elevators, int *elev_ca
   free(people_waiting);
   free(dest_arr);
 }
-
-
-
-// int main_sim(char *hotel, int *floors_number, int *elev, int *elev_cap,int *people_waiting, int *dest_arr)
-// {
-//   //we would need to keep track of the of the elevator of each person;
-//  //1 for end result and 2 for all steps:
-//   int answer = show_steps();//have to define steps;
-//   answer++;
-//   return 0;
-// }
-
-
 /// @brief asks the user for data
 /// @param  void takes no values in
 /// @return returns 1 if user selected end result, and 2 if user selected all steps
@@ -404,7 +407,7 @@ int skip_sim(void)
     char *str_p = low(str);
     if(str_com(str_p, "start")){//compare the strings
     done = TRUE;
-      return 2;
+      return 0;
     }else if(str_com(str_p, "skip"))
     {  
       done = TRUE; 
@@ -431,12 +434,6 @@ void initial_state(char *hotel,int *floor_n,  int *elev, int *elev_cap, int *peo
   printf("  INITIAL STATE\n=================\n\n");
   struct Elevator *esc_c_1 = elevator_space;
   struct Person *psc_c_1 = people_space;//any changes that we make, we still have reference to them
-  //print the grid for elevators:
-   //we need to keep track of two things: elevators and people;
-    //1.find out the dest floor of each person waiting
-    //2.we have to keep track of the row of each elevator
-    //3.how many people there are on each floor
-    //4.who wants where
   show_simulation(hotel, esc_c_1, psc_c_1 , elev, floor_n, people_waiting);//floors from 0 to 9
 }
 //---------------------------------------------------------------------------------------------------------------------
@@ -529,20 +526,8 @@ void print_row(struct Elevator *ep, struct Person *pp, int *en, int current_floo
   str[size  + 1] = '\0';
   printf("%s\n",str);
 }
-// /// @brief 
-// /// @param elevator_space 
-// /// @param elev_number 
-// /// @param people 
-// void print_elevators(struct Elevator *elevator_space, int elev_number, int *people){
-//   printf("Elevators:\n");
-//   for(int i = 0; i < elev_number; i++)
-//   {
-//     printf("%d: (",i);
-//     printf(")\n");
 
-//   }
-// }
-///
+
 ///the function prints the line to separate each row
 /// @return no return;
 void print_top(int *elev_number)
@@ -799,7 +784,10 @@ int int_arr_length(int *arr)
   }
   return i;
 }
-
+/// @brief copies the elements of the second string to the first string
+/// @param arr1 is the char array, where str2 will be copied
+/// @param arr2 is the char array, from where the data  will be copied to str2
+/// @return void
 void str_copy(char str1[], char str2[])
 {
   for(int i = 0; str2[i] != '\0';++i)
