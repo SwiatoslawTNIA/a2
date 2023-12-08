@@ -42,39 +42,51 @@ int header(void)
     printf("Out of memory! Program terminated!\n");
     return -1;
   }
-  if(show_initial_state()){
+  if(show_initial_state())
+  {
     initial_state(hotel, floors_num, elevators, elev_cap, people_waiting, dest_arr, elevator_space, people_space);
   }
-  if(skip_sim())
+  //if false, than we do the following, if true, then we continue
+  if(whether_start_simulation())
   {
+    //show the final state:
     free_everything(hotel, floors_num, elevators, elev_cap, people_waiting, dest_arr);
     return 0;
-  }else
-  {
-     //print the grid for elevators:
-   //we need to keep track of two things: elevators and people;
+  }else{
+    if(show_all_steps())
+    {
+      main_sim(hotel, floors_num, elevators, elev_cap, people_waiting, dest_arr, elevator_space, people_space);
+    //print the grid for elevators:
+    //we need to keep track of two things: elevators and people;
     //1.find out the dest floor of each person waiting
     //2.we have to keep track of the row of each elevator
     //3.how many people there are on each floor
     //4.which person is inside an elevator;
-    // main_sim(hotel, floors_num, elevators, elev_cap, people_waiting, dest_arr);
+    // main_sim(hotel, floors_num, elevators, elev_cap, people_waiting, dest_arr)     
+    } else
+    {
+      
+    }
   }
+  
+  
   // freeing the memory
   free_everything(hotel, floors_num, elevators, elev_cap, people_waiting, dest_arr);
   return 0;
 }
-int main_sim(char *hotel, int *floors_number, int *elev, int *elev_cap,int *people_waiting, int *dest_arr)
+int main_sim(char *hotel, int *floors_number, int *elev, int *elev_cap,int *people_waiting, int *dest_arr,
+struct Elevator *elevator_space, struct Person *people_space)
 {
   //we would need to keep track of the of the elevator of each person;
  //1 for end result and 2 for all steps:
-  int answer = show_steps();//have to define steps;
-  answer++;
+  //have to define steps;
+  printf("Hello world!");
   return 0;
 }
-/// @brief 
-/// @param elevator_space 
-/// @param elev_number 
-/// @param people 
+/// @brief prints the elevators below each hotel structure
+/// @param elevator_space is the pointer to the allocated elevators on the heap
+/// @param elev_number pointer to number of elevators 
+/// @param people pointer to the number of people 
 void print_elevators(struct Elevator *elevator_space, int elev_number, int *people){
   printf("Elevators:\n");
   for(int i = 0; i < elev_number; i++)
@@ -84,6 +96,7 @@ void print_elevators(struct Elevator *elevator_space, int elev_number, int *peop
 
   }
 }
+
 /// @brief free the  allocated data
 /// @param hotel pointer to the hotel name
 /// @param floors_num pointer to the number of floors
@@ -104,31 +117,28 @@ void free_everything(char *hotel, int *floors_num, int * elevators, int *elev_ca
 /// @brief asks the user for data
 /// @param  void takes no values in
 /// @return returns 1 if user selected end result, and 2 if user selected all steps
-int show_steps(void)
+int show_all_steps(void)
 {
+  puts("You've come.");
+  int show = 0;
   int done = FALSE;
   while(done == FALSE)
   {
     printf("Show all steps of the simulation? (\"all steps\"/\"end result\"):\n > ");
     char str[100];
+    //clear the buffer:
     scanf("%s", str);
-    int length = strl(str);//check the length
-    if(length > 10 || length < 9)
-    {
-      continue;
-    }
-    char *str_p = low(str);
-    if(str_com(str_p, "all steps"))
+    if(str_com(str, "all steps"))
     {//compare the strings
-    done = TRUE;
-      return 2;
-    }else if(str_com(str_p, "end result"))
-    {  
-      done = TRUE; 
-      return 1;
+      show = 1;
+      done = TRUE;
+    }else if(str_com(str, "end result"))
+    {
+      show = 0;
+      done = TRUE;
     }    
   }
-  return 0;
+  return show;
 }
 //---------------------------------------------------------------------------------------------------------------------
 ///function greets the user;no params;
@@ -351,6 +361,7 @@ int *destination_f(int *floors, int *people_w)
 int show_initial_state(void)
 {
   int done = FALSE;
+  int show = 0;
   while(done == FALSE)
   {
     printf("Show the initial state? (\"yes\"/\"no\"):\n > ");
@@ -367,10 +378,12 @@ int show_initial_state(void)
       if(str_com(str_p, "yes"))
       {//compare the strings
         // printf("\n <yes>\n");
-        return 1;
+        show = 1;
+        return show;
       }else if(str_com(str_p, "no "))
       {
-        return 0;
+        show = 0; 
+        return show;
       }
     }else if(length == 2)
     {
@@ -378,23 +391,26 @@ int show_initial_state(void)
       if(str_com(str_p, "yes"))
       {//compare the strings
         // printf("\n <yes>\n");
-        return 2;
+        show = 1;
+        return show;
       }else if(str_com(str_p, "no"))
       {
         // printf("\n <no>\n");
-        return 1;
+        show = 0;
+        return show;
       }
     }
     
   }
-  return 0;
+  return show;
 }
 /// @brief prompts and ask about the continuation of the simulation
 /// @param  void no parameters
 /// @return return the integer representation of the answer
-int skip_sim(void)
+int whether_start_simulation(void)
 {
   int done = FALSE;
+  int start = 0;
   while(done == FALSE)
   {
     printf("Start the simulation? (\"start\"/\"skip\"):\n > ");
@@ -406,15 +422,18 @@ int skip_sim(void)
     }
     char *str_p = low(str);
     if(str_com(str_p, "start")){//compare the strings
-    done = TRUE;
-      return 0;
+      done = TRUE;
+      start = 0;
+      return start;
     }else if(str_com(str_p, "skip"))
     {  
       done = TRUE; 
-      return 1;
+      start = 1;
+      return start;
     }    
   }
-  return 0;
+  //clear the buffer:
+  return start;
 }
 
 
