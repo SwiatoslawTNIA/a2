@@ -64,4 +64,4 @@ void str_copy(char str1[], char str2[]);
 void free_everything(char *hotel, int *floors_num, int * elevators, int *elev_cap, 
 int *people_waiting, int *dest_arr);
 
-
+void strip(char arr[]);

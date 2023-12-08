@@ -118,24 +118,29 @@ void free_everything(char *hotel, int *floors_num, int * elevators, int *elev_ca
 /// @return returns 1 if user selected end result, and 2 if user selected all steps
 int show_all_steps(void)
 {
-  int show = 0;
-  int done = FALSE;
-  while(done == FALSE)
+  int c = 0; 
+  while((c = getchar()) != '\n') {}
+  char str[20];
+  int valid_input = -1;
+  int count = 0; 
+  while(valid_input == -1 && count < 10)
   {
     printf("Show all steps of the simulation? (\"all steps\"/\"end result\"):\n > ");
-    char str[100];
-    fgets(str, 99, stdin);
-    if(str_com(str, "all steps\n") || str_com(str, "all steps "))
-    {//compare the strings
-      show = 1;
-      done = TRUE;
-    }else if(str_com(str, "end result\n") || str_com(str, "end result "))
+    fgets(str, 19, stdin);
+    if(str[strl(str) - 1] == '\n')
     {
-      show = 0;
-      done = TRUE;
+      str[strl(str) - 1] = '\0';
+    }
+    if(str_com(str, "all steps"))
+    {//compare the strings
+      valid_input = 1;
+    }else if(str_com(str, "end result"))
+    {
+      valid_input = 0;
     }    
+    ++count;
   }
-  return show;
+  return valid_input;
 }
 //---------------------------------------------------------------------------------------------------------------------
 ///function greets the user;no params;
@@ -411,12 +416,8 @@ int whether_start_simulation(void)
   while(done == FALSE)
   {
     printf("Start the simulation? (\"start\"/\"skip\"):\n > ");
-    char str[100];
-    scanf("%s", str);
-    int length = strl(str);//check the length
-    if(length > 5){
-      continue;
-    }
+    char str[10];
+    scanf("%6s", str);
     char *str_p = low(str);
     if(str_com(str_p, "start")){//compare the strings
       done = TRUE;
@@ -429,6 +430,7 @@ int whether_start_simulation(void)
       return start;
     }    
   }
+  puts("The whether function executed correctly.");
   //clear the buffer:
   return start;
 }
@@ -811,4 +813,13 @@ void str_copy(char str1[], char str2[])
     str1[i] = str2[i];
   }
 }
-
+/// @brief function strips the string of the newLine characters;
+/// @param arr array to be striped
+void strip(char arr[])
+{
+  char *c = arr;
+  for(; *c != '\n'; ++c)
+    ;
+  //move to the end of the array;
+  *c = '\0';//strip the string;
+}
