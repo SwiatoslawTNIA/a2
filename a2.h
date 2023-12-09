@@ -99,9 +99,12 @@ void first_line_print(int *elev_number);
 void print_simulation_row(struct Elevator *elevator_space, struct Person *people_space, int *elev, 
 int current_floor, int *people_waiting, int *floors_number, int *elev_cap);
 
-void update_people_inelev(struct Person *people_space, struct Elevator *elevator_space, int people_total);
+void update_people_leave(struct Person *people_space, struct Elevator *elevator_space, int people_total);
 
 void print_final_state(void);
 
 void last_simulation_line(int *elev_number);
 
+void print_message_people(struct Person *people_space, int people_total);
+
+void update_people_position(struct Person *people_space, int total_people);

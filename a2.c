@@ -77,24 +77,26 @@ struct Elevator *elevator_space, struct Person *people_space)
   update_people_direction(people_space, people_total);
   //until all the people reached their destination 
   int count = 0;
- 
-  while(!prove_destination(people_space, people_total) && count < 30)
+  while(!prove_destination(people_space, people_total) && count < 15)
   {
-     
-    //first people enter the elevator, then the elevators move:(on the next iteration)
-    print_simulation_step();
-    //assigs people to elevators, removes them from elevators, enables us to print elev_bottom and right section
+    ++step;//update the step;
+    // count++;
+    update_people_leave(people_space, elevator_space, people_total);
+    update_people_position(people_space, people_total);
     update_elevators_direction(elevator_space, elev, floors_number);
     update_people(people_space,elevator_space, people_total, elev);
     //printing our hotel:
+    print_simulation_step();
+    print_message_people(people_space, people_total);
+    //first people enter the elevator, then the elevators move:(on the next iteration)
+    //assigs people to elevators, removes them from elevators, enables us to print elev_bottom and right section
     print_hotel_name(hotel, elev);
     print_simulation_str(elevator_space, people_space, elev, people_waiting, floors_number, elev_cap);
     print_elevators_bottom(people_space,elevator_space, elev, people_total);
     //updating people
-    update_people_inelev(people_space, elevator_space, people_total);
     update_elevator_floor(elevator_space, elev);//update our elevators
+
     ++count;
-    ++step;//update the step;
   }  
   //final state:
   print_final_state();
@@ -104,16 +106,24 @@ struct Elevator *elevator_space, struct Person *people_space)
   print_simulation_str(elevator_space, people_space, elev, people_waiting, floors_number, elev_cap);
   print_elevators_bottom(people_space,elevator_space, elev, people_total);
   //updating people
-  update_people_inelev(people_space, elevator_space, people_total);
+  update_people_leave(people_space, elevator_space, people_total);
   update_elevator_floor(elevator_space, elev);//update our elevators
-  printf("Simulation done in %d steps!\n", step);
+  printf("Simulation done in %d steps!\n", step - 1);
   return 0;
 }
+/// @brief prints the final state of the program (the header)
+/// @param  void returns no parameters
 void print_final_state(void)
 {
-  printf("\n=================\nFINAL STATE\n=================\n\n");
+  printf("\n=================\n   FINAL STATE\n=================\n\n");
 }
-
+/// @brief prints the simulation structure
+/// @param elevator_space a pointer to the elevator space on the heap
+/// @param people_space a pointer to the people space on the heap
+/// @param elev a pointer to the number of elevators
+/// @param people_waiting a pointer to the number of people waiting
+/// @param floors_number a pointer to the number of floors
+/// @param elev_cap a pointer to the elvator capacity
 void print_simulation_str(struct Elevator *elevator_space, struct Person *people_space, int *elev, 
  int *people_waiting, int *floors_number, int *elev_cap)
 {
@@ -132,7 +142,8 @@ void print_simulation_str(struct Elevator *elevator_space, struct Person *people
   }
   last_simulation_line(elev);
 }
-
+/// @brief prints the first line of the elevator
+/// @param elev_number a pointer to the number of elevators
 void first_line_print(int *elev_number)
 {
    printf("++");
@@ -143,7 +154,14 @@ void first_line_print(int *elev_number)
   }
   printf("+\n");
 }
-
+/// @brief prints the row of the simulation's hotel
+/// @param elevator_space a pointer to the elevator space
+/// @param people_space a pointer to the people space
+/// @param elev a pointer to the number of elevators
+/// @param current_floor a pointer to the current floor
+/// @param people_waiting a pointer to the people waiting
+/// @param floors_number a pointer to the number of floors
+/// @param elev_cap a pointer to the capacity of elevators
 void print_simulation_row(struct Elevator *elevator_space, struct Person *people_space, int *elev, 
 int current_floor, int *people_waiting, int *floors_number, int *elev_cap)
 {
@@ -216,7 +234,8 @@ int current_floor, int *people_waiting, int *floors_number, int *elev_cap)
     
   printf(")\n");
 }
-
+/// @brief prints the last line of the simulation's hotel
+/// @param elev_number a pointer to the number of elevators
 void last_simulation_line(int *elev_number)
 {
   printf("++");
@@ -227,9 +246,10 @@ void last_simulation_line(int *elev_number)
   }
   printf("+\n");
 }
-/// @brief updates the direction of each person, executes just once
-/// @param people_space 
-/// @param people_total 
+/// @brief updates the direction of each person
+/// @param people_space a pointer to the people space on the heap
+/// @param people_total total amount of people
+///
 void update_people_direction(struct Person *people_space, int people_total)
 { 
   //we would need a copy of our people floors values:
@@ -256,6 +276,10 @@ void update_people_direction(struct Person *people_space, int people_total)
     }
   }
 }
+/// @brief updates the direction of each elevator
+/// @param elevator_space a pointer to the elevator space on the heap
+/// @param elev a pointer to the number of elevators
+/// @param floors_number a pointer to the number of floors
 void update_elevators_direction(struct Elevator *elevator_space, int *elev, int *floors_number)
 {
   for(int i = 0; i < *elev;++i)//move through each of the elevators:
@@ -270,7 +294,26 @@ void update_elevators_direction(struct Elevator *elevator_space, int *elev, int 
     }
   }
 }
-void update_people_inelev(struct Person *people_space, struct Elevator *elevator_space, int people_total)
+/// @brief controls for who the messages are printed.
+/// @param people_space a pointer to the people on the heap
+/// @param people_total a total amount of people
+void print_message_people(struct Person *people_space, int people_total)
+{
+  for(int i = 0; i < people_total;++i)
+  {
+    if(people_space[i].dest_floor == people_space[i].current_floor)
+    {
+      //print the message:
+      people_message(people_space[i].elev, people_space[i].dest_floor);
+    }
+  }
+  
+}
+/// @brief updates the state of each person (if it leaves or not)
+/// @param people_space a pointer to the people space on the heap
+/// @param elevator_space a pointer to the elevator space on the heap
+/// @param people_total a total amount of people
+void update_people_leave(struct Person *people_space, struct Elevator *elevator_space, int people_total)
 {
   for(int i = 0; i < people_total;++i)
   {
@@ -279,27 +322,35 @@ void update_people_inelev(struct Person *people_space, struct Elevator *elevator
     if(people_space[i].dest_floor == people_space[i].current_floor)
     {
       //print the message:
-      people_message(people_space[i].elev, people_space[i].dest_floor);
+      // people_message(people_space[i].elev, people_space[i].dest_floor);
       people_space[i].dest_floor = -1;
       //we will also have to increase the capacity of our elevator:
       elevator_space[people_space[i].elev].cap++;
       people_space[i].in_elevator = 0;//the person is no more in elevator
       people_space[i].elev = -1;//essentially expel that person from that elevator
-    }else
+    }
+  }
+}
+/// @brief updates the position of each person 
+/// @param people_space a pointer to the people space 
+/// @param total_people a total amount of people
+void update_people_position(struct Person *people_space, int total_people)
+{
+  //to update the position for each person we need to determinte 
+  //if the person is in elevator + determine the direction of each 
+  //person's movement:
+  for(int i = 0; i < total_people;++i)
+  {
+    if(people_space[i].in_elevator == 1)//this means that the current_floor != dest_floor
     {
-      //for that we need to determinte if the person is in elevator + determine the direction of each 
-      //person's movement:
-      if(people_space[i].in_elevator == 1)//this means that the current_floor != dest_floor
+      //if it is in elevator
+      if(people_space[i].direction == 1)//if person is moving upwards
       {
-        //if it is in elevator
-        if(people_space[i].direction == 1)//if person is moving upwards
-        {
-          people_space[i].current_floor++; 
-        }
-        if(people_space[i].direction == 0)
-        {
-          people_space[i].current_floor--;
-        }
+        people_space[i].current_floor++; 
+      }
+      if(people_space[i].direction == 0)
+      {
+        people_space[i].current_floor--;
       }
     }
   }
@@ -314,42 +365,46 @@ void update_people_inelev(struct Person *people_space, struct Elevator *elevator
 void update_people(struct Person *people_space, struct Elevator *elevator_space, int people_total,
 int *elev)
 {
-  //we're goint to check if the person is in the elevator, if it is, then we update it's location, 
-  //provided that she hasn't reached it's destination,
-  for(int i = 0; i < people_total; ++i)
+  //here we have to use the while loop to input the final condition: the people closest
+  //to the next floor enter the elevator:
+  int closest = 1;
+  while(closest < 9)//the maximum difference between the first and the last floors can be eight
   {
-    if(!people_space[i].in_elevator)//if the people are not in elevator:
+    for(int i = 0; i < people_total; ++i)
     {
-      //if it is in elevator, then we check if the person hasn't reached it's destination
-      //that is checked already by the function above wit(.in_elevator)
-      //check if people need transportation:
-      if(people_space[i].dest_floor != -1)
+      if(!people_space[i].in_elevator)//if the people are not in elevator:
       {
-        // printf("Person with floor %d needs %d", people_space[i].original_floor, people_space[i].dest_floor);
-        //have to check each elevator, if it is available:
-        for(int j = 0; j < *elev;++j)
+        //check if people need transportation:
+        if(people_space[i].dest_floor != -1)
         {
-        // printf("E.cap: %d", elevator_space[j].cap);
-        // printf("E.floor: %d", elevator_space[j].floor);
-        // printf("E.direction: %d", elevator_space[j].direction);
-        //we need to update the direction of the elevators before we assign them to the people.
-
-          if(elevator_space[j].cap > 0 && elevator_space[j].floor == people_space[i].original_floor
-          && elevator_space[j].direction == people_space[i].direction &&
-          people_space[i].in_elevator == 0)//and the person is not already in the elevator
+          // printf("Person with floor %d needs %d", people_space[i].original_floor, people_space[i].dest_floor);
+          //have to check each elevator, if it is available:
+          for(int j = 0; j < *elev;++j)
           {
-            // printf("The person from the floor %d is assigned to the elevator %d", 
-            // people_space[i].original_floor, elevator_space[j].index);
-            //then we assign the person to that elevator:
-            people_space[i].elev = elevator_space[j].index;
-            people_space[i].in_elevator = 1;//true;
-            elevator_space[j].cap--;//decrement the load of the elevator
-          }
-        } 
+          // printf("E.cap: %d", elevator_space[j].cap);
+          // printf("E.floor: %d", elevator_space[j].floor);
+          // printf("E.direction: %d", elevator_space[j].direction);
+          //we need to update the direction of the elevators before we assign them to the people.
+            if(elevator_space[j].cap > 0 && elevator_space[j].floor == people_space[i].original_floor
+            && elevator_space[j].direction == people_space[i].direction && people_space[i].in_elevator == 0
+            && pos(people_space[i].current_floor - people_space[i].dest_floor) == closest)//the person is not already in the elevator
+            {//if the difference between the current floor and the dest. floor is the smallest, 
+            //then we assign them to the elevator
+              // printf("The person from the floor %d is assigned to the elevator %d", 
+              // people_space[i].original_floor, elevator_space[j].index);
+              //then we assign the person to that elevator:
+              people_space[i].elev = elevator_space[j].index;
+              people_space[i].in_elevator = 1;//true;
+              elevator_space[j].cap--;//decrement the load of the elevator
+            }
+          } 
+        }
       }
+    
     }
-   
+    ++closest;//update our closest;
   }
+  
   //if a person is assigned to an elevator, then in_elevator is changed, she will be displayed only in the bottom
   //not in the list of people on the right.
   //update the floor of each person
@@ -415,12 +470,12 @@ void print_elevators_bottom(struct Person *people_space,struct Elevator *elevato
         {
           counter++;//now we know how many people are in this elevator, so the last one will be 
           //without comma
-          break;
         }
       } 
 
     //   now we know that there is someone in that elevator, so we print one structure, otherwise:
     // }
+    int printed = 0;
     if(counter > 0)
     {
       //we have to print elevators only once:
@@ -432,9 +487,19 @@ void print_elevators_bottom(struct Person *people_space,struct Elevator *elevato
       printf("%d: (",i);
       for(int j = 0; j < people_total; ++j)
       {
+        
         if(people_space[j].elev == elevator_space[i].index)
         {
-          printf("%d,", people_space[j].dest_floor);
+          if(printed == counter - 1)
+          {
+            printf("%d", people_space[j].dest_floor);
+            printed++;
+          }else
+          {
+            printf("%d,", people_space[j].dest_floor);
+            printed++;
+          }
+          
         }
       } 
       printf("\b)\n");
