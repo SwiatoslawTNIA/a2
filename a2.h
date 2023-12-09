@@ -39,7 +39,7 @@ int *destination_f(int *floors, int *people_w);
 int show_initial_state(void);
 
 void initial_state( char *h_c, int *floor_n,  int *elev,int *elev_cap, int *people_waiting, 
-int *dest_arr, struct Elevator *elevator_space, struct Person *people_space);
+ struct Elevator *elevator_space, struct Person *people_space);
 
 void print_hotel_name(char *hotel_n, int *elev_count);
 struct Elevator* build_elev(const int *elev, const int *elev_cap_c,const int *floor_n);
@@ -60,7 +60,7 @@ int whether_start_simulation(void);
 
 void last_line_print(int *elev_number);
 
-int main_sim(char *hotel, int *floors_number, int *elev, int *elev_cap,int *people_waiting, int *dest_arr,
+int main_sim(char *hotel, int *floors_number, int *elev, int *elev_cap,int *people_waiting,
 struct Elevator *elevator_space, struct Person *people_space);
 
 int show_all_steps(void);
@@ -78,14 +78,14 @@ void update_elevator_floor(struct Elevator *elevator_space, int *elev);
 int prove_destination(struct Person *people_space, int people_total);
 
 void update_people(struct Person *people_space, struct Elevator *elevator_space, int people_total,
-int *elev, int *floors_number);
+int *elev);
 
 void print_elevators_bottom(struct Person *people_space,struct Elevator *elevator_space, int *elev_number,
- int people_total, int *floors_number);
+ int people_total);
 
 int pos(int n);
 
-void update_people_direction(struct Person *people_space, int people_total, int *dest_arr);
+void update_people_direction(struct Person *people_space, int people_total);
 
 void people_message(int elev, int dest_floor);
 
@@ -100,3 +100,8 @@ void print_simulation_row(struct Elevator *elevator_space, struct Person *people
 int current_floor, int *people_waiting, int *floors_number, int *elev_cap);
 
 void update_people_inelev(struct Person *people_space, struct Elevator *elevator_space, int people_total);
+
+void print_final_state(void);
+
+void last_simulation_line(int *elev_number);
+
