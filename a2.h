@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 enum {FALSE = 0, TRUE = 1, ST_SIZE = 100};
- int step = 1;
+ int step = 0;
 //structs
 
 struct Elevator{
@@ -81,7 +81,7 @@ void update_people(struct Person *people_space, struct Elevator *elevator_space,
 int *elev);
 
 void print_elevators_bottom(struct Person *people_space,struct Elevator *elevator_space, int *elev_number,
- int people_total);
+ int people_total, int *elev_cap);
 
 int pos(int n);
 
@@ -108,3 +108,7 @@ void last_simulation_line(int *elev_number);
 void print_message_people(struct Person *people_space, int people_total);
 
 void update_people_position(struct Person *people_space, int total_people);
+
+void update_final_elev(struct Elevator *elevator_space, int *elev, int *floors_number);
+
+void update_final_people(struct Person *people_space, int people_total);
