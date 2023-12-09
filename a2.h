@@ -16,6 +16,7 @@ struct Person{
   int dest_floor;
   int in_elevator;
   int direction;
+  int original_floor;
   int elev;//will take the value of a specified elevator
 };
 
@@ -78,7 +79,8 @@ int prove_destination(struct Person *people_space, int people_total);
 void update_people(struct Person *people_space, struct Elevator *elevator_space, int people_total,
 int *elev, int *floors_number);
 
-void print_elevators_bottom(struct Person *people_space, int *elev_number, int people_total, int *floors_number);
+void print_elevators_bottom(struct Person *people_space,struct Elevator *elevator_space, int *elev_number,
+ int people_total, int *floors_number);
 
 int pos(int n);
 
@@ -89,8 +91,11 @@ void people_message(int elev, int dest_floor);
 void update_elevators_direction(struct Elevator *elevator_space, int *elev, int *floors_number);
 
 void print_simulation_str(struct Elevator *elevator_space, struct Person *people_space, int *elev, 
- int *people_waiting, int *floors_number);
+ int *people_waiting, int *floors_number, int *elev_cap);
 
+void first_line_print(int *elev_number);
 
 void print_simulation_row(struct Elevator *elevator_space, struct Person *people_space, int *elev, 
-int current_floor, int *people_waiting, int *floors_number);
+int current_floor, int *people_waiting, int *floors_number, int *elev_cap);
+
+void update_people_inelev(struct Person *people_space, struct Elevator *elevator_space, int people_total);
