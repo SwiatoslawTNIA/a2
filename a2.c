@@ -50,6 +50,8 @@ int header(void)
   if(whether_start_simulation())
   {
     //show the final state:
+    free(elevator_space);
+    free(people_space);
     free_everything(hotel, floors_num, elevators, elev_cap, people_waiting, dest_arr);
     return 0;
   }else{
@@ -609,7 +611,7 @@ void free_everything(char *hotel, int *floors_num, int * elevators, int *elev_ca
 /// @return returns 1 if user selected end result, and 2 if user selected all steps
 int show_all_steps(void)
 {
-  char str[20];
+  char str[20] = "";
   int valid_input = -1;
   int count = 0; 
   //clear the buffer:
