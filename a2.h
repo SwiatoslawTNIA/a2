@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 enum {FALSE = 0, TRUE = 1, ST_SIZE = 100};
- int step = 0;
+ int step = 1;
 //structs
 
 struct Elevator{

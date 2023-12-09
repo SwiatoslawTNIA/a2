@@ -275,7 +275,7 @@ int *elev, int *floors_number)
       //check if people need transportation:
       if(people_space[i].dest_floor != -1)
       {
-        printf("Person with floor %d needs %d", people_space[i].original_floor, people_space[i].dest_floor);
+        // printf("Person with floor %d needs %d", people_space[i].original_floor, people_space[i].dest_floor);
         //have to check each elevator, if it is available:
         for(int j = 0; j < *elev;++j)
         {
