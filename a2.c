@@ -16,11 +16,11 @@ int main(void)
 int header(void)
 {
   greeting();
-  char *hotel = hotel_name();//return a pointer to the string hotelName;
-  int *floors_num = floors(hotel);//collect the number of floors;
-  int *elevators = elev_count(hotel);//collect the number of elevators;
-  int *elev_cap = elevCapacity(hotel);//collect the elevator capacity;
-  int *people_waiting = people_w();//collect the amount of waiting people;
+  char *hotel = hotel_name();
+  int *floors_num = floors(hotel);
+  int *elevators = elev_count(hotel);
+  int *elev_cap = elevCapacity(hotel);
+  int *people_waiting = people_w();
   int *dest_arr = destination_f(floors_num, people_waiting);
   if(hotel == NULL || elevators == NULL || people_waiting == NULL || dest_arr == NULL || floors_num == NULL){
     free(hotel);
@@ -73,24 +73,29 @@ struct Elevator *elevator_space, struct Person *people_space)
   int people_total = *people_waiting * *floors_number;
   //update the direction of people:
   //based on those directions, people will be assigned to the elevators, to move with them.
-  update_people_direction(people_space, people_total);
+  update_people_direction(people_space, people_total, dest_arr);
   //until all the people reached their destination 
   int count = 0;
-  while(!prove_destination(people_space, people_total) && count < 10)
+ 
+  while(!prove_destination(people_space, people_total) && count < 30)
   {
+     
     //first people enter the elevator, then the elevators move:(on the next iteration)
     print_simulation_step();
     //assigs people to elevators, removes them from elevators, enables us to print elev_bottom and right section
-    update_people(people_space,elevator_space, people_total, elev, floors_number);
-    update_people_inelev(people_space, elevator_space, people_total);
     update_elevators_direction(elevator_space, elev, floors_number);
-    update_elevator_floor(elevator_space, elev);//update our elevators
+    update_people(people_space,elevator_space, people_total, elev, floors_number);
     //printing our hotel:
     print_hotel_name(hotel, elev);
     print_simulation_str(elevator_space, people_space, elev, people_waiting, floors_number, elev_cap);
     print_elevators_bottom(people_space,elevator_space, elev, people_total, floors_number);
+    //updating people
+    update_people_inelev(people_space, elevator_space, people_total);
+    update_elevator_floor(elevator_space, elev);//update our elevators
     ++count;
     ++step;//update the step;
+    //the floors are assigned in accordance to 0 - n - 1 system, but we move in 1 - n system, 
+    //to fix it, we would need to add + 1 to each floor. 
   }  
   return 0;
 }
@@ -98,12 +103,13 @@ void print_simulation_str(struct Elevator *elevator_space, struct Person *people
  int *people_waiting, int *floors_number, int *elev_cap)
 {
   first_line_print(elev);
-  int current_floor = 1;
-  while(current_floor <= *floors_number)
+  int current_floor = 0;
+  
+  while(current_floor < *floors_number)
   {
    print_simulation_row(elevator_space, people_space, elev, current_floor, people_waiting,
         floors_number, elev_cap);
-    if(current_floor != *floors_number)
+    if(current_floor != *floors_number - 1)
     {
       between_row(elev);
     }
@@ -127,78 +133,76 @@ int current_floor, int *people_waiting, int *floors_number, int *elev_cap)
 {
   //both for people and elevators the floors start from 1
   printf("|");
-  //floors will be from 0 to 9
     //move through each of the elevators:
   for(int i = 0; i < *elev; i++)//it is an index in our pointer array
   {
-    if(elevator_space[i].floor == current_floor)//elevators are printed normally
+    if(*floors_number - elevator_space[i].floor == current_floor + 1)//elevators are printed normally
     {
       printf("| ");
-      printf("[%d]", *elev_cap - elevator_space[i].available);//elevator capacity -epc->available
+      printf("[%d]", *elev_cap - elevator_space[i].cap);//elevator capacity -epc->cap
       printf(" ");
     }else{
       printf("|     ");
     }
   }
-  printf("||  ");
+  printf("||  (");
   //print the row:
-  int size = 2 * *people_waiting;
-  //move through eah person:
-  char str[44] = "(";
-  //move through each person:
-  int count = 1;
-  int lowest_current_floor = 1;
-  while(lowest_current_floor <= *floors_number)//it is going to work
+  int total_people = *people_waiting * *floors_number;
+  int lowest_current_floor = -1;
+  while(lowest_current_floor < *floors_number)
   {
-    for(int i = 0; i < *people_waiting * (*floors_number);i++)
+    for(int i = 0; i < total_people;i++)
     {
       //we don't print based on the current floor, we print based on the initial floor of each person:
-      if((people_space[i].original_floor == *floors_number - current_floor + 1) //reverse our floors
-        && people_space[i].dest_floor == lowest_current_floor)
+      if((*floors_number  - people_space[i].original_floor == current_floor + 1)
+      && lowest_current_floor == people_space[i].dest_floor)
       //we will have to print it in ascending order:(in accordance with the destination floor)
         {
-          //if person has reached it's destination, then we're going to print 0:
-          if(people_space[i].dest_floor == -1)//because if the person reached its destination floor
-          //then we set it's dest_floor to -1;
+          if(people_space[i].dest_floor == -1)
           {
-            str[count] = '0';
-            str[count + 1] = ',';
-            count += 2;
-          }else if(people_space[i].in_elevator == 1)//if person is in elevator:
+            printf("0,");
+          }
+          //if we haven't reached the destination:
+          if(people_space[i].in_elevator)
           {
-            str[count] = '-';
-            str[count + 1] = ',';
-            count += 2;
-          }else if(people_space[i].in_elevator == 0)//if person is not in elevator and has not reached the 
-          //destination yet
-          {
-            str[count] = '0' + people_space[i].dest_floor;
-            str[count + 1] = ',';
-            count += 2;
+            printf("-,");
+          }else if(people_space[i].dest_floor != -1){
+            printf("%d,", people_space[i].dest_floor);
           }
         }
     }
-    lowest_current_floor++;//now the lowest current floor will be updated
+    ++lowest_current_floor;
   }
-  str[size] = ')';
-  str[size  + 1] = '\0';
-  printf("%s\n",str);
+    
+  printf("\b)\n");
 }
 
 /// @brief updates the direction of each person, executes just once
 /// @param people_space 
 /// @param people_total 
-void update_people_direction(struct Person *people_space, int people_total)
-{
+void update_people_direction(struct Person *people_space, int people_total, int *dest_arr)
+{ 
+  //we would need a copy of our people floors values:
+  int arr[people_total];
+  for(int i = 0; i < people_total;++i)
+  {
+    arr[i] = people_space[i].current_floor;
+  }
+  //now we have recorded the values in i, now reassign them:
+  for(int i = 0; i < people_total;++i)
+  {
+    people_space[i].current_floor = arr[people_total - i - 1];
+    people_space[i].original_floor = arr[people_total - i - 1];
+  }
   for(int i = 0; i < people_total;++i)
   {
     //compute the direction of each person:
     if(people_space[i].current_floor > people_space[i].dest_floor)
     {
-      people_space[i].direction = 1;//they need to move upwards
+      people_space[i].direction = 0;//they need to move upwards
     }else if(people_space[i].current_floor < people_space[i].dest_floor)
     {
-      people_space[i].direction = 0;//they need to move downwards
+      people_space[i].direction = 1;//they need to move downwards
     }
   }
 }
@@ -207,12 +211,12 @@ void update_elevators_direction(struct Elevator *elevator_space, int *elev, int 
   for(int i = 0; i < *elev;++i)//move through each of the elevators:
   {
     //it changes the direction only at the top or at the bottom:
-    if(elevator_space[i].floor == 1)
+    if(elevator_space[i].floor == 0)
     {
-      elevator_space[i].direction = 0;//downwards 0, upwards 1;
-    }else if(elevator_space[i].floor == *floors_number)
+      elevator_space[i].direction = 1;//downwards 0, upwards 1;
+    }else if(elevator_space[i].floor == *floors_number - 1)
     {
-      elevator_space[i].direction = 1;
+      elevator_space[i].direction = 0;
     }
   }
 }
@@ -221,17 +225,32 @@ void update_people_inelev(struct Person *people_space, struct Elevator *elevator
   for(int i = 0; i < people_total;++i)
   {
     //what if people have reached their destination?
+    //the condition below is only possible in elevator
     if(people_space[i].dest_floor == people_space[i].current_floor)
     {
       //print the message:
       people_message(people_space[i].elev, people_space[i].dest_floor);
       people_space[i].dest_floor = -1;
       //we will also have to increase the capacity of our elevator:
-
-      elevator_space[people_space[i].elev].available++;//increment(elev_cap) the elevator load of that person's 
-      //elevator
+      elevator_space[people_space[i].elev].cap++;
       people_space[i].in_elevator = 0;//the person is no more in elevator
       people_space[i].elev = -1;//essentially expel that person from that elevator
+    }else
+    {
+      //for that we need to determinte if the person is in elevator + determine the direction of each 
+      //person's movement:
+      if(people_space[i].in_elevator == 1)//this means that the current_floor != dest_floor
+      {
+        //if it is in elevator
+        if(people_space[i].direction == 1)//if person is moving upwards
+        {
+          people_space[i].current_floor++; 
+        }
+        if(people_space[i].direction == 0)
+        {
+          people_space[i].current_floor--;
+        }
+      }
     }
   }
   
@@ -243,54 +262,47 @@ void update_people_inelev(struct Person *people_space, struct Elevator *elevator
 /// @param elev the amount of elevators
 /// @param floors_number the number of floors (of type integer pointer)
 void update_people(struct Person *people_space, struct Elevator *elevator_space, int people_total,
- int *elev, int *floors_number)
+int *elev, int *floors_number)
 {
-    for(int i = 0; i < people_total;++i)
+  //we're goint to check if the person is in the elevator, if it is, then we update it's location, 
+  //provided that she hasn't reached it's destination,
+  for(int i = 0; i < people_total; ++i)
+  {
+    if(!people_space[i].in_elevator)//if the people are not in elevator:
     {
-      //if the person hasn't reached is destination floor:
+      //if it is in elevator, then we check if the person hasn't reached it's destination
+      //that is checked already by the function above wit(.in_elevator)
+      //check if people need transportation:
       if(people_space[i].dest_floor != -1)
       {
-        //move through each of the elevators, if it's current floor is people[i]'s current floor, and
-        //it is not full, assign the person to the elevator;
-        for(int j = 0; j < *elev; ++j)
+        printf("Person with floor %d needs %d", people_space[i].original_floor, people_space[i].dest_floor);
+        //have to check each elevator, if it is available:
+        for(int j = 0; j < *elev;++j)
         {
-          if((elevator_space[j].available > 0 )
-          && ((*floors_number - (elevator_space[j].floor) + 1) == people_space[i].current_floor)
-          && people_space[i].in_elevator == 0)//we need to check if that person is not in another elevator
-          //the upper condition checks if the elevator is on the same floor and is still "available"
+        // printf("E.cap: %d", elevator_space[j].cap);
+        // printf("E.floor: %d", elevator_space[j].floor);
+        // printf("E.direction: %d", elevator_space[j].direction);
+        //we need to update the direction of the elevators before we assign them to the people.
+
+          if(elevator_space[j].cap > 0 && elevator_space[j].floor == people_space[i].original_floor
+          && elevator_space[j].direction == people_space[i].direction &&
+          people_space[i].in_elevator == 0)//and the person is not already in the elevator
           {
-            if(elevator_space[j].direction == people_space[i].direction){
-              //the direction of the elevator == the direction of person
-              people_space[i].elev = elevator_space[i].index;
-              people_space[i].in_elevator = 1;//true;
-              elevator_space[i].available--;//decrement the load of the elevator
-            }
+            printf("The person from the floor %d is assigned to the elevator %d", 
+            people_space[i].original_floor, elevator_space[j].index);
+            //then we assign the person to that elevator:
+            people_space[i].elev = elevator_space[j].index;
+            people_space[i].in_elevator = 1;//true;
+            elevator_space[j].cap--;//decrement the load of the elevator
           }
-        }
+        } 
       }
-      
     }
+   
+  }
   //if a person is assigned to an elevator, then in_elevator is changed, she will be displayed only in the bottom
   //not in the list of people on the right.
-  //update the floor of each person:
-  for(int i = 0; i < people_total;++i)
-  {
-    //move through each of the people and update their floor:
-    //for that we need to determinte if the person is in elevator + determine the direction of each 
-    //person's movement:
-    if(people_space[i].in_elevator == 1)
-    {
-      //if it is in elevator
-      if(people_space[i].direction == 1)//if person is moving upwards
-      {
-        people_space[i].current_floor++; 
-      }
-      if(people_space[i].direction == 0)
-      {
-        people_space[i].current_floor--;
-      }
-    }
-  }
+  //update the floor of each person
 } 
 void people_message(int elev, int dest_floor)
 {
@@ -322,10 +334,10 @@ void update_elevator_floor(struct Elevator *elevator_space, int *elev)
   {
     if(elevator_space[i].direction == 1)
     {
-      elevator_space[i].floor--;//move it up one floor(since we have to move in opposite direction)
+      elevator_space[i].floor++;//move it up one floor(since we have to move in opposite direction)
     }else if(elevator_space[i].direction == 0)
     {
-      elevator_space[i].floor++;//move it downwards, increase the floors;
+      elevator_space[i].floor--;//move it downwards, increase the floors;
     }
   }
 }
@@ -336,41 +348,58 @@ void update_elevator_floor(struct Elevator *elevator_space, int *elev)
 void print_elevators_bottom(struct Person *people_space,struct Elevator *elevator_space, 
  int *elev_number, int people_total, int *floors_number)
 {
-  printf("Elevators:\n");
+  
   //print the people with the lowest to the highest dest_floor first:
-  int highest_dest_floor = 1;//it mustn't be one, not every person is starting from the first floor;
- 
+  // int highest_dest_floor = 1;//it mustn't be one, not every person is starting from the first floor;
+  int counter = 0, elevators_printed = 0;
+
   for(int i = 0; i < *elev_number; i++)//we move through each of the elevators
   {
       //move through each of the people, if people[i] is in this elevator, print it, otherwise not;
-    printf("%d: (",i);
-    while(highest_dest_floor <= *floors_number)
-    {
+    // printf("%d: (",i);
+    // while(highest_dest_floor <= *floors_number)
+    // {
       for(int j = 0; j < people_total; ++j)
       {
         if(people_space[j].elev == elevator_space[i].index)
         {
-        //if person is in this elevator:
-
-        // if(pos(people_space[j].dest_floor - people_space[j].current_floor) == highest_dest_floor)
-        // {
-        //   //we have also to check if the person is in this elevator:
-        //   if(people_space[j].elev == elevator_space[i].index)
-        //   {
-        //     printf("%d,", people_space[j].dest_floor);
-        //   }
+          counter++;
+          break;
         }
       } 
-      highest_dest_floor++;
+
+    //   now we know that there is someone in that elevator, so we print one structure, otherwise:
+    // }
+    if(counter > 0)
+    {
+      //we have to print elevators only once:
+      if(elevators_printed == 0)
+      {
+        printf("Elevators:\n");
+        elevators_printed++;
+      }
+      printf("%d: (",i);
+    // while(highest_dest_floor <= *floors_number)
+    // {
+      for(int j = 0; j < people_total; ++j)
+      {
+        
+        if(people_space[j].elev == elevator_space[i].index)
+        {
+          printf("%d,", people_space[j].dest_floor);
+        }
+      } 
+      printf("\b)\n");
+      counter = 0;
     }
-    printf("\b)\n");
   }
+  printf("\n");
 }
 /// @brief prints the step of the function
 /// @param  void no parameters;
 void print_simulation_step(void)
 {
-  printf("=== Simulation Step <%d> ===\n", step);
+  printf("=== Simulation Step %d ===\n", step);
 }
 /// @brief free the  allocated data
 /// @param hotel pointer to the hotel name
@@ -398,11 +427,6 @@ int show_all_steps(void)
   int valid_input = -1;
   int count = 0; 
   //clear the buffer:
-  char c ;
-  while((c  = getchar()) != '\n')
-  {
-    continue;
-  }
   getchar();//get that new line
   while(valid_input == -1 && count < 10)
   {
@@ -599,9 +623,9 @@ int *destination_f(int *floors, int *people_w)
       }
       //convert the string to a number:
       int num = atoi(&str[i]);
-      if((num < 0) || num > (*floors))
+      if((num < 0) || num >= (*floors))
       {
-        printf("Wrong input, the destination floor %d is out of range (0 to %d)!\n",num, *floors);
+        printf("Wrong input, the destination floor %d is out of range (0 to %d)!\n",num, *floors - 1);
         can_proceed = FALSE;
         break;
       }else if(num == current_floor)
@@ -697,7 +721,7 @@ int whether_start_simulation(void)
   {
     printf("Start the simulation? (\"start\"/\"skip\"):\n > ");
     char str[10];
-    scanf("%6s", str);
+    scanf("%s", str);
     char *str_p = low(str);
     if(str_com(str_p, "start")){//compare the strings
       done = TRUE;
@@ -710,7 +734,6 @@ int whether_start_simulation(void)
       return start;
     }    
   }
-  puts("The whether function executed correctly.");
   return start;
 }
 /// @brief controls the initial state of the simulation show(the first display of the hotel)
@@ -729,7 +752,7 @@ void initial_state(char *hotel,int *floor_n,  int *elev, int *elev_cap, int *peo
   printf("  INITIAL STATE\n=================\n\n");
   struct Elevator *esc_c_1 = elevator_space;
   struct Person *psc_c_1 = people_space;//any changes that we make, we still have reference to them
-  show_simulation(hotel, esc_c_1, psc_c_1 , elev, floor_n, people_waiting);//floors from 0 to 9
+  show_simulation(hotel, esc_c_1, psc_c_1 , elev, floor_n, people_waiting, elev_cap);//floors from 0 to 9
 }
 //---------------------------------------------------------------------------------------------------------------------
 ///
@@ -743,7 +766,8 @@ void initial_state(char *hotel,int *floor_n,  int *elev, int *elev_cap, int *peo
 /// @param int *floors floors number pointer
 /// @return 0;
 //
-int show_simulation(char *hotel_n, struct Elevator *elevator_space, struct Person *people_space, int *en, int *floors, int *people)
+int show_simulation(char *hotel_n, struct Elevator *elevator_space, struct Person *people_space, 
+int *en, int *floors, int *people, int *elev_cap)
 {
   //crete a copy:
   struct Elevator *es = elevator_space;
@@ -751,13 +775,13 @@ int show_simulation(char *hotel_n, struct Elevator *elevator_space, struct Perso
   int *elev_number = en;
   int *floor = floors;
   int *p_c = people;
-  int current_floor = 1;
+  int current_floor = 0;
   print_hotel_name(hotel_n, en);
   print_top(elev_number);
-  while(current_floor <= *floor)
+  while(current_floor < *floor)
   {
-    print_row(es, ps, elev_number,  current_floor, p_c, floor);//floors from 0 to 9
-    if(current_floor != *floor)
+    print_row(es, ps, elev_number,  current_floor, p_c, floor, elev_cap);//floors from 0 to 9
+    if(current_floor != *floor - 1)
     {
       between_row(en);
     }
@@ -774,7 +798,8 @@ int show_simulation(char *hotel_n, struct Elevator *elevator_space, struct Perso
 /// @param current_floor the current floor
 /// @param people_waiting pointer to the amount of people waiting
 /// @param floors pointer to the array of all people's destinations
-void print_row(struct Elevator *ep, struct Person *pp, int *en, int current_floor, int *people_waiting, int *floors)
+void print_row(struct Elevator *ep, struct Person *pp, int *en, int current_floor, 
+int *people_waiting, int *floors, int *elev_cap)
 {
   struct Elevator *epc = ep;  
   printf("|");
@@ -783,10 +808,10 @@ void print_row(struct Elevator *ep, struct Person *pp, int *en, int current_floo
   for(int i = 0; i < *en; i++)
   {
     // printf("<%d>", epc->floor);
-    if(epc->floor == current_floor)
+    if(*floors - epc->floor == current_floor + 1)
     {
       printf("| ");
-      printf("[%d]", epc->available);//elevator capacity -epc->available
+      printf("[%d]", *elev_cap - epc->cap);//elevator capacity -epc->cap
       printf(" ");
     }else{
       printf("|     ");
@@ -802,7 +827,7 @@ void print_row(struct Elevator *ep, struct Person *pp, int *en, int current_floo
   //now it points to str[1];
   //move through each person:
   int count = 1;
-  for(int i = 1; i <= *people_waiting * (*floors);i++)
+  for(int i = 0; i < *people_waiting * (*floors);i++)
   {
     if(ppp->current_floor == current_floor)//here we print the people in any order!!
     {
@@ -887,15 +912,15 @@ struct Elevator* build_elev(const int *elev, const int *elev_cap,const int *floo
     
     if(i % 2 == 0)
     {//it's even
-      esc->floor = *floor_n;//standard notation
+      esc->floor = 0;//standard floor
       esc->direction = 1;
     }else
     {
-      esc->floor = 1;//we start from floor 1
+      esc->floor = *floor_n - 1;//we start from floor 1
       esc->direction = 0;
     }
     // esc->cur = *elev_cap;
-    esc->available = *elev_cap;
+    esc->cap = *elev_cap;
     //this is how we keep track of each elevator
     esc->index = i;
     esc++;
@@ -919,7 +944,7 @@ struct Person* build_people(const int *floors,const int *people_waiting, int *de
     return NULL;
   }
   struct Person *psc = people;//copied
-  for(int i = 1; i <= *floors; i++)
+  for(int i = 0; i < *floors; i++)
   {
     //for each person on the floor:
     for(int j = 0; j < *people_waiting; j++)

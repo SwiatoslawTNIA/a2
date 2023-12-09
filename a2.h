@@ -1,13 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 enum {FALSE = 0, TRUE = 1, ST_SIZE = 100};
- int step = 1;
+ int step = 0;
 //structs
 
 struct Elevator{
   int floor;
   int cap;
-  int available;
   int index;
   int direction;//1 upwards and 0 downwards
 };
@@ -46,10 +45,12 @@ void print_hotel_name(char *hotel_n, int *elev_count);
 struct Elevator* build_elev(const int *elev, const int *elev_cap_c,const int *floor_n);
 struct Person* build_people(const int *floors, const int *people_waiting, int *dest_a_c);
 
-int show_simulation(char *h_n, struct Elevator *elevator_space, struct Person *people_space, int *en, int *floors, int *people);
+int show_simulation(char *h_n, struct Elevator *elevator_space, struct Person *people_space, 
+int *en, int *floors, int *people, int *elev_cap);
 void print_top(int *elev_number);
 
-void print_row(struct Elevator *ep, struct Person *pp, int *en, int current_floor, int *people_waiting, int *floors);
+void print_row(struct Elevator *ep, struct Person *pp, int *en, int current_floor, 
+int *people_waiting, int *floors, int *elev_cap);
 
 void between_row(int *elev_number);
 
@@ -84,7 +85,7 @@ void print_elevators_bottom(struct Person *people_space,struct Elevator *elevato
 
 int pos(int n);
 
-void update_people_direction(struct Person *people_space, int people_total);
+void update_people_direction(struct Person *people_space, int people_total, int *dest_arr);
 
 void people_message(int elev, int dest_floor);
 
