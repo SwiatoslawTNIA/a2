@@ -237,39 +237,37 @@ int current_floor, int *people_waiting, int *floors_number, int *elev_cap)
   //print the people:
   int total_people = *people_waiting * *floors_number;
   int lowest_floor = -1;
+  //find out how many people are with '-':
+  int p = 0;
+  int people = 0;
+  for(int i = 0; i < total_people;++i)
+  {
+    if(*floors_number  - people_space[i].original_floor == current_floor + 1 
+    && (people_space[i].in_elevator || people_space[i].dest_floor == -1))
+    {
+      if(people == *people_waiting - 1)
+      {
+        printf("-");
+      }else{
+        printf("-,");
+        people++;
+      }
+      ++p;
+    }
+  }
+  // printf("%d is the amount of people either in elevator or deleted.",p);
   //we know that the number of people on each floor is exactly one specific value, so:
   //if the person is in elevator and it's her floor, we print '-':
-  int people = 0;
   while(lowest_floor < *floors_number)
   {
     for(int i = 0; i < total_people;i++)
     {
       //we don't print based on the current floor, we print based on the initial floor of each person:
       if((*floors_number  - people_space[i].original_floor == current_floor + 1)
-      && lowest_floor == people_space[i].dest_floor)
+      && lowest_floor == people_space[i].dest_floor && !people_space[i].in_elevator
+      && people_space[i].dest_floor != -1)
       //we will have to print it in ascending order:(in accordance with the destination floor)
         {
-          if(people_space[i].dest_floor == -1)
-          {
-            if(people == *people_waiting - 1)
-            {
-              printf("-");
-            }else{
-              printf("-,");
-              people++;
-            }
-          }
-          //if we haven't reached the destination:
-          if(people_space[i].in_elevator)
-          {
-            if(people == *people_waiting - 1)
-            {
-              printf("-");
-            }else{
-              printf("-,");
-              people++;
-            }
-          }else if(people_space[i].dest_floor != -1){
             if(people == *people_waiting - 1)
             {
               printf("%d", people_space[i].dest_floor);
@@ -277,11 +275,12 @@ int current_floor, int *people_waiting, int *floors_number, int *elev_cap)
               printf("%d,", people_space[i].dest_floor);
               people++;
             }
-          }
         }
     }
     ++lowest_floor;
   }
+
+  
   printf(")\n");
 }
 /// @brief prints the last line of the simulation's hotel
