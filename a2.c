@@ -9,6 +9,8 @@ int main(void)
     return -1;
   else if(rsp == 0)
     return 0;
+  else if(rsp > 0)
+    return rsp;
 }
 /// @brief takes the load from the main function, possible extension
 /// @param  void no parameters
@@ -58,6 +60,10 @@ int header(void)
     if(show_all_steps())
     {
       main_sim(hotel, floors_num, elevators, elev_cap, people_waiting, elevator_space, people_space);
+      free(elevator_space);
+      free(people_space);
+      free_everything(hotel, floors_num, elevators, elev_cap, people_waiting, dest_arr);
+      return step;
     } else
     {
       int people_total = *people_waiting * *floors_num;
@@ -576,7 +582,7 @@ void print_elevators_bottom(struct Person *people_space,struct Elevator *elevato
           
         }
       } 
-      printf("\b)\n");
+      printf(")\n");
       counter = 0;
     }
   }
