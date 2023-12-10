@@ -100,7 +100,15 @@ int header(void)
   free_everything(hotel, floors_num, elevators, elev_cap, people_waiting, dest_arr);
   return 0;
 }
-
+/// @brief combines all the main simulation functions into one, the "brain" of the program
+/// @param hotel a pointer to the hotel name
+/// @param floors_number a pointer to the number of floors
+/// @param elev a pointer to the number of elevators
+/// @param elev_cap a pointer to the capacity of the elevators
+/// @param people_waiting a pointer to the people_waiting
+/// @param elevator_space a pointer to the elevator space on the heap
+/// @param people_space a pointer to the people space on the heap
+/// @return 
 int main_sim(char *hotel, int *floors_number, int *elev, int *elev_cap,int *people_waiting,
 struct Elevator *elevator_space, struct Person *people_space)
 {
